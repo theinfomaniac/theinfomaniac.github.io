@@ -92,6 +92,214 @@
       <h2>Lorem Ipsum</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore repudiandae labore veniam reprehenderit voluptatum, laboriosam perferendis fuga, dolore quam quas nostrum totam sunt esse expedita. Vero distinctio omnis accusantium. Quisquam ullam saepe cupiditate magni numquam totam perspiciatis error velit, debitis veniam labore possimus aut sunt, reiciendis natus. Impedit provident voluptatum nulla fuga error a magnam, corporis natus aperiam fugit quod perferendis quos quaerat, numquam sequi doloribus tenetur dolorem voluptate deleniti, odio minus. Deserunt eius quasi odit voluptas unde voluptatum dicta cumque exercitationem soluta beatae porro distinctio, delectus officiis, nobis officia ullam necessitatibus, rem natus corrupti nam! Est, nihil molestias fugiat sed quae enim commodi expedita soluta tempore molestiae fuga adipisci rem esse voluptates quos, ut quasi sunt ad a perspiciatis ducimus maxime animi. Adipisci officia doloribus magni alias maiores ab quo, eos mollitia sint esse. Labore odio, architecto nihil quaerat soluta blanditiis impedit laudantium esse officiis dolorum dolore libero, id sequi minima incidunt eum facilis itaque distinctio. Voluptas doloremque minus reiciendis ex beatae laudantium cum sequi repellat blanditiis molestiae. Cumque, libero nulla! Sit, quisquam magni dolore consectetur odio impedit adipisci voluptas ab, laboriosam autem nihil nam est ipsa excepturi obcaecati eos neque! Omnis similique qui veritatis. Repellat magni dolorem, facilis eaque, harum molestias, delectus est adipisci laudantium velit optio blanditiis debitis? Tenetur totam maiores animi officiis eligendi expedita nemo corrupti distinctio. Cum libero soluta beatae doloribus sit, repellendus nobis vel obcaecati velit dolorem voluptate magnam inventore quas pariatur quam reprehenderit molestiae hic sunt dicta illo amet quis magni accusamus sequi? Vel quis, dolores iusto suscipit excepturi laboriosam repellat consectetur! Maiores deserunt, pariatur nesciunt consequuntur recusandae minima assumenda consequatur inventore natus debitis illo velit voluptatum necessitatibus qui aspernatur illum impedit magni dignissimos ea, molestias tempora corporis, asperiores iusto possimus. Libero expedita aspernatur officia totam dolorum culpa, minus, alias adipisci eligendi suscipit voluptates, magnam laudantium? Inventore cupiditate perspiciatis mollitia excepturi, voluptatibus ducimus expedita provident. Dicta, odit. Odio, qui repudiandae! Maiores dignissimos, magnam deleniti reprehenderit ex cum ea eveniet placeat quae, ad at perspiciatis nobis corporis doloribus voluptatem nulla aliquam sunt accusamus facere quaerat necessitatibus ipsa! Nam quisquam dicta minima commodi nostrum. Exercitationem necessitatibus optio cumque voluptate modi amet consequuntur similique ex inventore explicabo doloremque esse sed sequi nemo rem, nostrum ullam. Totam repellat ut ipsa quisquam rem, nulla, suscipit debitis atque earum quis voluptates quaerat exercitationem architecto repellendus placeat, tenetur incidunt distinctio consectetur reiciendis minima officiis aliquam? Ipsum sequi hic officia iste a. Blanditiis, dicta! Eveniet molestias ut natus odio fugiat cum necessitatibus, architecto, quo a quisquam autem porro explicabo ipsam, nostrum deserunt possimus expedita eum est corporis quibusdam cupiditate! Fugiat, quaerat saepe. Harum modi eligendi beatae alias fugiat. Nostrum cum nisi saepe dicta iste cupiditate, deserunt omnis, doloremque a distinctio eum rem adipisci ab? Sapiente, dicta ipsam blanditiis earum omnis necessitatibus temporibus, excepturi accusantium delectus quo quod iusto ad aliquam nemo ducimus ab nobis inventore sequi veritatis? Nulla, dolorem. Voluptas, obcaecati non facilis repellendus ratione officiis veritatis, modi culpa rerum placeat voluptatum quia ex? Officia quos dolorum repellat deserunt voluptas praesentium.</p>
     </div>
-  </main>
+        <div class="container">
+          <h2 class="section-title glow-text">Upcoming Assignments</h2>
+        </div>
+        <div id="assignments-container" class="assignments-container">
+            <!-- Assignment cards will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <script>
+        const SHEET_ID = '1VDAI3EJC7Wf9tp7TKr__Y6CFzalE5aw43bVq5Bk02NA';
+        const API_KEY = 'AIzaSyDFFmaGCZTbWVjedTxSyvkxg7obqvxDinw';
+        const SHEET_NAME = 'Sheet1';
+        const STORAGE_KEY = 'savedClassSelections';
+        
+        const predefinedClasses = [
+            "AP Human Geography", 
+            "Pre-AP Biology", 
+            "Theater 1", 
+            "Tech Theater 1", 
+            "Art 1", 
+            "English 1", 
+            "Pre-AP Algebra 2",
+            "Pre-AP Geometry",
+            "Pre-AP Algebra 1",
+            "Computer Science 1",
+            "PE / Health",
+            "Pre-AP Chemistry",
+            "Dance",
+            "Spanish I",
+            "Spanish II",
+            "Spanish III",
+            "French I",
+            "French II",
+            "French III",
+            "UIL Baseball",
+            "UIL Volleyball"
+        ];
+        
+        let allAssignments = [];
+        let selectedClasses = new Set();
+        
+        // Save class selections to localStorage
+        function saveClassSelections() {
+            const selections = {};
+            document.querySelectorAll('select').forEach(select => {
+                selections[select.id] = select.value;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
+        }
+        
+        // Load saved class selections from localStorage
+        function loadSavedSelections() {
+            try {
+                const savedSelections = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+                document.querySelectorAll('select').forEach(select => {
+                    const savedValue = savedSelections[select.id];
+                    if (savedValue && predefinedClasses.includes(savedValue)) {
+                        select.value = savedValue;
+                        if (savedValue !== '') {
+                            selectedClasses.add(savedValue);
+                            select.setAttribute('data-previous', savedValue);
+                        }
+                    }
+                });
+                displayAssignments();
+            } catch (error) {
+                console.error('Error loading saved selections:', error);
+                localStorage.removeItem(STORAGE_KEY); // Clear potentially corrupted data
+            }
+        }
+        
+        async function fetchAssignments() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('No data found in sheet');
+                }
+        
+                allAssignments = data.values.slice(1).map(assignment => {
+                    return {
+                        subject: assignment[0],
+                        dueDate: new Date(assignment[1]),
+                        title: assignment[2],
+                        dueDateStr: assignment[1]
+                    };
+                }).sort((a, b) => a.dueDate - b.dueDate);
+        
+                updateDropdowns();
+                loadSavedSelections(); // Load saved selections after dropdowns are populated
+            } catch (error) {
+                console.error('Error fetching assignments:', error);
+                document.getElementById('assignments-container').innerHTML = 
+                    '<p>Error loading assignments. Please try again later.</p>';
+            }
+        }
+        
+        function displayAssignments() {
+            const container = document.getElementById('assignments-container');
+            container.innerHTML = '';
+        
+            let filteredAssignments = allAssignments;
+            
+            if (selectedClasses.size > 0) {
+                filteredAssignments = allAssignments.filter(assignment => 
+                    selectedClasses.has(assignment.subject)
+                );
+            }
+        
+            if (filteredAssignments.length === 0) {
+                container.innerHTML = '<p>No assignments found for the selected classes.</p>';
+                return;
+            }
+        
+            for (let i = 0; i < filteredAssignments.length; i += 3) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'assignments-row';
+        
+                for (let j = i; j < i + 3 && j < filteredAssignments.length; j++) {
+                    const assignment = filteredAssignments[j];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'assignment-card glass-effect';
+                    card.innerHTML = `
+                        <div class="assignment-header">
+                            <h3 class="assignment-title">${assignment.subject}</h3>
+                            <span class="due-date">${assignment.dueDateStr}</span>
+                        </div>
+                        <div class="assignment-content">
+                            <p class="assignment-details">${assignment.title}</p>
+                        </div>
+                    `;
+                    rowDiv.appendChild(card);
+                }
+        
+                container.appendChild(rowDiv);
+            }
+        }
+        
+        function handleClassSelection(select) {
+            const selectedClass = select.value;
+            
+            const oldClass = select.getAttribute('data-previous');
+            if (oldClass) {
+                selectedClasses.delete(oldClass);
+            }
+        
+            if (selectedClass) {
+                selectedClasses.add(selectedClass);
+                select.setAttribute('data-previous', selectedClass);
+            } else {
+                select.removeAttribute('data-previous');
+            }
+        
+            saveClassSelections(); // Save selections after any change
+            displayAssignments();
+        }
+        
+        function updateDropdowns() {
+            const selectElements = document.querySelectorAll('select');
+            
+            selectElements.forEach(select => {
+                select.innerHTML = "<option value=''>---</option>";
+                predefinedClasses.forEach(classOption => {
+                    const option = document.createElement('option');
+                    option.value = classOption;
+                    option.text = classOption;
+                    select.appendChild(option);
+                });
+        
+                select.addEventListener('change', () => handleClassSelection(select));
+            });
+        
+            displayAssignments();
+        }
+        
+        async function loadNav() {
+            try {
+                const response = await fetch('https://interlinkcvhs.org/navnav.html');
+                const nav = await response.text();
+                document.getElementById('nav-container').innerHTML = nav;
+            } catch (error) {
+                console.error('Error loading navigation:', error);
+                document.getElementById('nav-container').innerHTML = 
+                    '<p>Error loading navigation. Please try again later.</p>';
+            }
+        }
+        
+        async function loadBanner() {
+            try {
+                const response = await fetch('https://interlinkcvhs.org/banner.html');
+                const bannerContent = await response.text();
+                document.getElementById('banner-container').innerHTML = bannerContent;
+            } catch (error) {
+                console.error('Error loading banner:', error);
+                document.getElementById('banner-container').innerHTML = 
+                    '<p>Error loading banner. Please try again later.</p>';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBanner();
+            loadNav();
+            fetchAssignments();
+        });
+    </script>
 </body>
 </html>
