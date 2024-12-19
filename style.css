@@ -15,6 +15,61 @@ html{
   font-family: Poppins, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.5rem;
 }
+
+.assignments-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.assignment-card {
+    padding: 1.5rem;
+    animation: fadeIn 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.assignment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.assignment-card:hover::before {
+    transform: translateX(100%);
+}
+
+.assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.assignment-title {
+    margin: 0;
+    color: var(--accent-color);
+}
+
+.due-date {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.assignment-details {
+    color: var(--text-light);
+    opacity: 0.8;
+    margin: 0.5rem 0;
+}
 body{
   min-height: 100vh;
   min-height: 100dvh;
