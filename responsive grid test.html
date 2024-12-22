@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Grid</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+  <div class="grid-container" id="assignments-container">
+    <!-- Assignment cards will be dynamically inserted here -->
+  </div>
+
+  <script>
+    const SHEET_ID = '1VDAI3EJC7Wf9tp7TKr__Y6CFzalE5aw43bVq5Bk02NA';
+    const API_KEY = 'AIzaSyDFFmaGCZTbWVjedTxSyvkxg7obqvxDinw';
+    const SHEET_NAME = 'Sheet1';
+
+    async function fetchAssignments() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (!data.values || data.values.length === 0) {
+          throw new Error('No data found in sheet');
+        }
+
+        const assignments = data.values.slice(1).map(assignment => {
+          return {
+            subject: assignment[0],
+            dueDate: new Date(assignment[1]),
+            title: assignment[2],
+            dueDateStr: assignment[1]
+          };
+        }).sort((a, b) => a.dueDate - b.dueDate);
+
+        displayAssignments(assignments);
+      } catch (error) {
+        console.error('Error fetching assignments:', error);
+        document.getElementById('assignments-container').innerHTML = 
+          '<p>Error loading assignments. Please try again later.</p>';
+      }
+    }
+
+    function displayAssignments(assignments) {
+      const container = document.getElementById('assignments-container');
+      container.innerHTML = '';
+
+      if (assignments.length === 0) {
+        container.innerHTML = '<p>No assignments found.</p>';
+        return;
+      }
+
+      assignments.forEach(assignment => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h2>${assignment.subject}</h2>
+          <h4>${assignment.dueDateStr}</h4>
+          <p>${assignment.title}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchAssignments);
+  </script>
+</body>
+</html>
