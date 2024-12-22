@@ -6,7 +6,166 @@
   <title>QOTD</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.png" type="image/png">
+  <script type="text/javascript" src="react.production.min.js"></script>
+  <script type="text/javascript" src="react-dom.production.min.js"></script>
   <script type="text/javascript" src="app.js" defer></script>
+  <style>
+    /* Existing styles from qotd.html */
+    .qotd-frame {
+        background: var(--glass-background);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 2rem;
+        margin: 0 auto;
+        max-width: 800px;
+    }
+    .qotd-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .qotd-subject {
+        color: #00FFFF;
+        font-size: 1.2rem;
+    }
+    .qotd-date {
+        color: #888;
+        font-style: italic;
+    }
+    .qotd-specifics {
+        color: #FFFFFF;
+        margin-bottom: 1rem;
+    }
+    .qotd-question {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .qotd-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .qotd-options textarea {
+        width: 100%;
+        height: 150px;
+        padding: 0.5rem;
+        font-size: 1.5rem;
+        border: 2px solid var(--primary-color);
+        border-radius: 5px;
+        resize: none;
+        color: #FFFFFF;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .qotd-submit {
+        margin-top: 2rem;
+        text-align: center;
+    }
+    #qotdSubmit {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-family: 'Montserrat', sans-serif;
+    }
+    #qotdSubmit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+    }
+    .feedback {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+    .feedback.correct {
+        background-color: rgba(0, 255, 0, 0.2);
+        color: #00ff00;
+    }
+    .feedback.incorrect {
+        background-color: rgba(255, 0, 0, 0.2);
+        color: #ff0000;
+    }
+    .feedback.hidden {
+        opacity: 0;
+    }
+    .attempts {
+        margin-top: 1rem;
+        text-align: center;
+        color: #888;
+    }
+    .multiple-choice-option {
+        display: block;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 2px solid var(--primary-color);
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+        color: #FFFFFF;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .multiple-choice-option:hover,
+    .multiple-choice-option.selected {
+        background-color: rgba(0, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.4);
+    }
+
+    /* Updated navigation styles */
+    .nav-button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-button img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .nav-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .nav-button:not(:disabled):hover {
+        transform: scale(1.1);
+    }
+
+    .qotd-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .nav-controls {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 1rem;
+    }
+  </style>
 </head>
 <body>
   <nav id="sidebar">
@@ -84,6 +243,234 @@
     <div class="container">
       <h2>Question of the Day</h2>
       <p>Here you will find the daily questions to challenge your knowledge and skills.</p>
+      <div class="games-container">
+        <h2 class="section-title glow-text">Today's Question</h2>
+        <div id="root"><div class="qotd-container"><div class="nav-controls"><button class="nav-button"><img src="qotdBackwardHover.png" alt="Previous"></button><button class="nav-button"><img src="qotdForwardHover.png" alt="Next"></button></div><div class="qotd-frame"><div class="qotd-header"><span class="qotd-subject"><strong>Pre-AP Algebra 1</strong></span><span class="qotd-date">12/27/2024</span></div><div class="qotd-specifics">4.1 Writing Equations in Slope-Intercept Form</div><div class="qotd-question glow-text"><strong>Write the equation of the line passing through (0,5) with a slope of -2.</strong></div><div class="qotd-options"><div class="multiple-choice-option" data-option="A) y=-2x+5">A) y=-2x+5</div><div class="multiple-choice-option" data-option="B) y=2x+5">B) y=2x+5</div><div class="multiple-choice-option" data-option="C) y=-2x-5">C) y=-2x-5</div><div class="multiple-choice-option" data-option="D) y=2x-5">D) y=2x-5</div></div><div class="qotd-submit"><button id="qotdSubmit">Submit</button></div><div id="feedback" class="feedback hidden"></div><div id="attempts" class="attempts" data-attempts="0">Attempts: 0/3</div></div></div></div>
+    </div>
+</main>
+
+<script type="module">
+
+    // Create and mount the React component
+    const { useState, useEffect } = React;
+    const { createRoot } = ReactDOM;
+
+    function QOTDNavigator() {
+        const [questions, setQuestions] = useState([]);
+        const [currentIndex, setCurrentIndex] = useState(0);
+        const [loading, setLoading] = useState(true);
+        const [answered, setAnswered] = useState(false);
+
+        useEffect(() => {
+            fetchQuestions();
+        }, []);
+
+        // Reset state when changing questions
+        useEffect(() => {
+            setAnswered(false);
+            const feedbackElement = document.getElementById('feedback');
+            const attemptsElement = document.getElementById('attempts');
+            
+            // Clear feedback with transition
+            if (feedbackElement) {
+                feedbackElement.classList.add('hidden');
+                setTimeout(() => {
+                    feedbackElement.textContent = '';
+                    feedbackElement.className = 'feedback hidden';
+                }, 300);
+            }
+            
+            if (attemptsElement) {
+                attemptsElement.textContent = 'Attempts: 0/3';
+                attemptsElement.setAttribute('data-attempts', '0');
+            }
+            // Reset submit button
+            const submitButton = document.getElementById('qotdSubmit');
+            if (submitButton) submitButton.disabled = false;
+            // Clear selected options
+            document.querySelectorAll('.multiple-choice-option').forEach(opt => 
+                opt.classList.remove('selected'));
+            // Clear textarea if it exists
+            const textarea = document.getElementById('freeResponseAnswer');
+            if (textarea) textarea.value = '';
+        }, [currentIndex]);
+
+        async function fetchQuestions() {
+            try {
+                const response = await fetch('https://sheets.livepolls.app/api/spreadsheets/bc82dea8-d6f7-43dd-ac21-8d7de68f0d98/Sheet1');
+                const data = await response.json();
+                if (data.success) {
+                    const sortedQuestions = data.data.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+                    setQuestions(sortedQuestions);
+                    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    const todayIndex = sortedQuestions.findIndex(q => q.Date === today);
+                    setCurrentIndex(todayIndex !== -1 ? todayIndex : sortedQuestions.length - 1);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+                setLoading(false);
+            }
+        }
+
+        const goToPrevious = () => {
+            if (currentIndex > 0) {
+                setCurrentIndex(currentIndex - 1);
+            }
+        };
+
+        const goToNext = () => {
+            if (currentIndex < questions.length - 1) {
+                setCurrentIndex(currentIndex + 1);
+            }
+        };
+
+        const handleSubmit = (qotd) => {
+            const feedbackElement = document.getElementById('feedback');
+            const attemptsElement = document.getElementById('attempts');
+            let attempts = parseInt(attemptsElement?.getAttribute('data-attempts') || '0');
+            const maxAttempts = 3;
+
+            attempts++;
+            
+            let userAnswer;
+            const selectedOption = document.querySelector('.multiple-choice-option.selected');
+            if (selectedOption) {
+                userAnswer = selectedOption.getAttribute('data-option');
+            } else {
+                const textAnswer = document.getElementById('freeResponseAnswer');
+                userAnswer = textAnswer ? textAnswer.value.trim() : '';
+            }
+
+            const correctAnswer = qotd.Correct1.trim();
+
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                feedbackElement.textContent = 'Correct! Great job!';
+                feedbackElement.className = 'feedback correct';
+                document.getElementById('qotdSubmit').disabled = true;
+                setAnswered(true);
+            } else {
+                feedbackElement.textContent = attempts >= maxAttempts ? 
+                    `Incorrect. The correct answer was: ${correctAnswer}` : 
+                    'Incorrect. Try again!';
+                feedbackElement.className = 'feedback incorrect';
+                if (attempts >= maxAttempts) {
+                    document.getElementById('qotdSubmit').disabled = true;
+                    setAnswered(true);
+                }
+            }
+
+            if (attemptsElement) {
+                attemptsElement.textContent = `Attempts: ${attempts}/${maxAttempts}`;
+                attemptsElement.setAttribute('data-attempts', attempts.toString());
+            }
+        };
+
+        const displayQOTD = (qotd) => {
+            const hasOptions = qotd.Options && qotd.Options.trim() !== "";
+            const options = hasOptions ? qotd.Options.split('\n') : [];
+
+            return React.createElement('div', { className: 'qotd-container' },
+                React.createElement('div', { className: 'nav-controls' },
+                    React.createElement('button', {
+                        className: 'nav-button',
+                        onClick: goToPrevious,
+                        disabled: currentIndex === 0
+                    }, React.createElement('img', {
+                        src: currentIndex === 0 ? 'qotdBackward.png' : 'qotdBackwardHover.png',
+                        alt: 'Previous'
+                    })),
+                    React.createElement('button', {
+                        className: 'nav-button',
+                        onClick: goToNext,
+                        disabled: currentIndex === questions.length - 1
+                    }, React.createElement('img', {
+                        src: currentIndex === questions.length - 1 ? 'qotdForward.png' : 'qotdForwardHover.png',
+                        alt: 'Next'
+                    }))
+                ),
+                React.createElement('div', { className: 'qotd-frame' },
+                    React.createElement('div', { className: 'qotd-header' },
+                        React.createElement('span', {
+                            className: 'qotd-subject',
+                            dangerouslySetInnerHTML: { __html: qotd.Subject }
+                        }),
+                        React.createElement('span', {
+                            className: 'qotd-date'
+                        }, qotd.Date)
+                    ),
+                    React.createElement('div', {
+                        className: 'qotd-specifics'
+                    }, qotd.Specifics),
+                    React.createElement('div', {
+                        className: 'qotd-question glow-text',
+                        dangerouslySetInnerHTML: { __html: qotd.Question }
+                    }),
+                    React.createElement('div', { className: 'qotd-options' },
+                        hasOptions ? 
+                            options.map((option, index) =>
+                                React.createElement('div', {
+                                    key: index,
+                                    className: 'multiple-choice-option',
+                                    'data-option': option,
+                                    onClick: (e) => {
+                                        if (!answered) {
+                                            document.querySelectorAll('.multiple-choice-option').forEach(opt => 
+                                                opt.classList.remove('selected'));
+                                            e.target.classList.add('selected');
+                                        }
+                                    }
+                                }, option)
+                            ) :
+                            React.createElement('textarea', {
+                                id: 'freeResponseAnswer',
+                                placeholder: 'Type your answer here...',
+                                disabled: answered
+                            })
+                    ),
+                    React.createElement('div', { className: 'qotd-submit' },
+                        React.createElement('button', {
+                            id: 'qotdSubmit',
+                            onClick: () => handleSubmit(qotd),
+                            disabled: answered
+                        }, 'Submit')
+                    ),
+                    React.createElement('div', { id: 'feedback', className: 'feedback hidden' }),
+                    React.createElement('div', { id: 'attempts', className: 'attempts', 'data-attempts': '0' }, 'Attempts: 0/3')
+                )
+            );
+        };
+
+        if (loading) {
+            return React.createElement('div', { className: 'text-center p-8' },
+                React.createElement('p', null, 'Loading question of the day...')
+            );
+        }
+
+        if (questions.length === 0) {
+            return React.createElement('div', { className: 'text-center p-8' },
+                React.createElement('p', null, 'No questions available.')
+            );
+        }
+
+        const currentQuestion = questions[currentIndex];
+        if (!currentQuestion) {
+            return React.createElement('div', { className: 'text-center p-8' },
+                React.createElement('p', null, 'Question not found.')
+            );
+        }
+
+        return displayQOTD(currentQuestion);
+    }
+
+    // Create root and render app
+    const root = createRoot(document.getElementById('root'));
+    root.render(React.createElement(QOTDNavigator));
+
+    // Load navigation and banner
+    loadNav();
+    loadBanner();
+</script>
     </div>
   </main>
 </body>
