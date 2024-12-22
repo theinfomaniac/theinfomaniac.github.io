@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+<!-- saved from url=(0030)https://interlinkcvhs.org/qotd -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QOTD</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.png" type="image/png">
-    <script type="text/javascript" src="react.production.min.js"></script>
-    <script type="text/javascript" src="react-dom.production.min.js"></script>
+    <script src="react.production.min.js.download"></script>
+    <script src="react-dom.production.min.js.download"></script>
     <script type="text/javascript" src="app.js" defer></script>
     <style>
         /* Existing styles */
@@ -263,18 +264,14 @@
 
             async function fetchQuestions() {
                 try {
-                    const response = await fetch('qbank.html');
-                    const text = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'text/html');
-                    const scriptContent = doc.querySelector('script').textContent;
-                    const questionsMatch = scriptContent.match(/const questions = (\[.*?\]);/s);
-                    if (questionsMatch) {
-                        const questionsArray = JSON.parse(questionsMatch[1]);
-                        setQuestions(questionsArray);
+                    const response = await fetch('https://sheets.livepolls.app/api/spreadsheets/bc82dea8-d6f7-43dd-ac21-8d7de68f0d98/Sheet1');
+                    const data = await response.json();
+                    if (data.success) {
+                        const sortedQuestions = data.data.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+                        setQuestions(sortedQuestions);
                         const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                        const todayIndex = questionsArray.findIndex(q => q.Date === today);
-                        setCurrentIndex(todayIndex !== -1 ? todayIndex : Math.floor(Math.random() * questionsArray.length));
+                        const todayIndex = sortedQuestions.findIndex(q => q.Date === today);
+                        setCurrentIndex(todayIndex !== -1 ? todayIndex : sortedQuestions.length - 1);
                     }
                     setLoading(false);
                 } catch (error) {
