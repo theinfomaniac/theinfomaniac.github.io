@@ -8,33 +8,34 @@
   <link rel="icon" href="favicon.png" type="image/png">
   <script type="text/javascript" src="app.js" defer></script>
   <style>
-    body {
-      transition: background-color 0.3s, color 0.3s;
-    }
+    /* Add this to your style.css or within a <style> tag in index.html */
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
 
-    body.light-mode {
-      background-color: #ffffff;
-      color: #000000;
-    }
+body.light-mode {
+  background-color: #ffffff;
+  color: #000000;
+}
 
-    body.dark-mode {
-      background-color: #121212;
-      color: #ffffff;
-    }
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
 
-    .navbar, .container, .assignment-card {
-      transition: background-color 0.3s, color 0.3s;
-    }
+.navbar, .container, .assignment-card {
+  transition: background-color 0.3s, color 0.3s;
+}
 
-    body.light-mode .navbar, body.light-mode .container, body.light-mode .assignment-card {
-      background-color: #ffffff;
-      color: #000000;
-    }
+body.light-mode .navbar, body.light-mode .container, body.light-mode .assignment-card {
+  background-color: #ffffff;
+  color: #000000;
+}
 
-    body.dark-mode .navbar, body.dark-mode .container, body.dark-mode .assignment-card {
-      background-color: #1e1e1e;
-      color: #ffffff;
-    }
+body.dark-mode .navbar, body.dark-mode .container, body.dark-mode .assignment-card {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
   </style>
 </head>
 <body>
@@ -102,4 +103,254 @@
         </a>
       </li>
       <li>
-        <a href
+        <a href="profile.html">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Zm80 0h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
+          <span>Credits</span>
+        </a>
+      </li>
+      <li>
+         <button id="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+      </li>
+    </ul>
+  </nav>
+  <main>
+    <div class="container">
+      <h2>Hello!</h2>
+      <p>If you're seeing this then, you're on the wrong site! This is a site used by Ethan for testing potential ideas for Interlink CVHS. Please go to https://interlinkcvhs.org or don't, we don't care [as]</p>
+    </div>
+    <div class="container">
+      <h2>header fr</h2>
+      <p>paragraph text fr</p>
+    </div>
+    <div class="container">
+      <h2>lore of the ipsum</h2>
+      <p>uh shorter text fr upcoming assignment test below</p>
+    </div>
+        <div class="container">
+          <h2 class="section-title glow-text">Upcoming Assignments</h2>
+        </div>
+        <div id="assignments-container" class="assignments-container">
+            <!-- Assignment cards will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <script>
+        const SHEET_ID = '1VDAI3EJC7Wf9tp7TKr__Y6CFzalE5aw43bVq5Bk02NA';
+        const API_KEY = 'AIzaSyDFFmaGCZTbWVjedTxSyvkxg7obqvxDinw';
+        const SHEET_NAME = 'Sheet1';
+        const STORAGE_KEY = 'savedClassSelections';
+        
+        const predefinedClasses = [
+            "AP Human Geography", 
+            "Pre-AP Biology", 
+            "Theater 1", 
+            "Tech Theater 1", 
+            "Art 1", 
+            "English 1", 
+            "Pre-AP Algebra 2",
+            "Pre-AP Geometry",
+            "Pre-AP Algebra 1",
+            "Computer Science 1",
+            "PE / Health",
+            "Pre-AP Chemistry",
+            "Dance",
+            "Spanish I",
+            "Spanish II",
+            "Spanish III",
+            "French I",
+            "French II",
+            "French III",
+            "UIL Baseball",
+            "UIL Volleyball"
+        ];
+        
+        let allAssignments = [];
+        let selectedClasses = new Set();
+        
+        // Save class selections to localStorage
+        function saveClassSelections() {
+            const selections = {};
+            document.querySelectorAll('select').forEach(select => {
+                selections[select.id] = select.value;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
+        }
+        
+        // Load saved class selections from localStorage
+        function loadSavedSelections() {
+            try {
+                const savedSelections = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+                document.querySelectorAll('select').forEach(select => {
+                    const savedValue = savedSelections[select.id];
+                    if (savedValue && predefinedClasses.includes(savedValue)) {
+                        select.value = savedValue;
+                        if (savedValue !== '') {
+                            selectedClasses.add(savedValue);
+                            select.setAttribute('data-previous', savedValue);
+                        }
+                    }
+                });
+                displayAssignments();
+            } catch (error) {
+                console.error('Error loading saved selections:', error);
+                localStorage.removeItem(STORAGE_KEY); // Clear potentially corrupted data
+            }
+        }
+        
+        async function fetchAssignments() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('No data found in sheet');
+                }
+        
+                allAssignments = data.values.slice(1).map(assignment => {
+                    return {
+                        subject: assignment[0],
+                        dueDate: new Date(assignment[1]),
+                        title: assignment[2],
+                        dueDateStr: assignment[1]
+                    };
+                }).sort((a, b) => a.dueDate - b.dueDate);
+        
+                updateDropdowns();
+                loadSavedSelections(); // Load saved selections after dropdowns are populated
+            } catch (error) {
+                console.error('Error fetching assignments:', error);
+                document.getElementById('assignments-container').innerHTML = 
+                    '<p>Error loading assignments. Please try again later.</p>';
+            }
+        }
+        
+        function displayAssignments() {
+            const container = document.getElementById('assignments-container');
+            container.innerHTML = '';
+        
+            let filteredAssignments = allAssignments;
+            
+            if (selectedClasses.size > 0) {
+                filteredAssignments = allAssignments.filter(assignment => 
+                    selectedClasses.has(assignment.subject)
+                );
+            }
+        
+            if (filteredAssignments.length === 0) {
+                container.innerHTML = '<p>No assignments found for the selected classes.</p>';
+                return;
+            }
+        
+            for (let i = 0; i < filteredAssignments.length; i += 3) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'assignments-row';
+        
+                for (let j = i; j < i + 3 && j < filteredAssignments.length; j++) {
+                    const assignment = filteredAssignments[j];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'assignment-card glass-effect';
+                    card.innerHTML = `
+                        <div class="assignment-header">
+                            <h3 class="assignment-title">${assignment.subject}</h3>
+                            <span class="due-date">${assignment.dueDateStr}</span>
+                        </div>
+                        <div class="assignment-content">
+                            <p class="assignment-details">${assignment.title}</p>
+                        </div>
+                    `;
+                    rowDiv.appendChild(card);
+                }
+        
+                container.appendChild(rowDiv);
+            }
+        }
+        
+        function handleClassSelection(select) {
+            const selectedClass = select.value;
+            
+            const oldClass = select.getAttribute('data-previous');
+            if (oldClass) {
+                selectedClasses.delete(oldClass);
+            }
+        
+            if (selectedClass) {
+                selectedClasses.add(selectedClass);
+                select.setAttribute('data-previous', selectedClass);
+            } else {
+                select.removeAttribute('data-previous');
+            }
+        
+            saveClassSelections(); // Save selections after any change
+            displayAssignments();
+        }
+        
+        function updateDropdowns() {
+            const selectElements = document.querySelectorAll('select');
+            
+            selectElements.forEach(select => {
+                select.innerHTML = "<option value=''>---</option>";
+                predefinedClasses.forEach(classOption => {
+                    const option = document.createElement('option');
+                    option.value = classOption;
+                    option.text = classOption;
+                    select.appendChild(option);
+                });
+        
+                select.addEventListener('change', () => handleClassSelection(select));
+            });
+        
+            displayAssignments();
+        }
+        
+        async function loadNav() {
+            try {
+                const response = await fetch('https://interlinkcvhs.org/navnav.html');
+                const nav = await response.text();
+                document.getElementById('nav-container').innerHTML = nav;
+            } catch (error) {
+                console.error('Error loading navigation:', error);
+                document.getElementById('nav-container').innerHTML = 
+                    '<p>Error loading navigation. Please try again later.</p>';
+            }
+        }
+        
+        async function loadBanner() {
+            try {
+                const response = await fetch('https://interlinkcvhs.org/banner.html');
+                const bannerContent = await response.text();
+                document.getElementById('banner-container').innerHTML = bannerContent;
+            } catch (error) {
+                console.error('Error loading banner:', error);
+                document.getElementById('banner-container').innerHTML = 
+                    '<p>Error loading banner. Please try again later.</p>';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBanner();
+            loadNav();
+            fetchAssignments();
+        });
+    </script>
+    <script>
+        function toggleTheme() {
+          const body = document.body;
+          const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          body.classList.remove(currentTheme + '-mode');
+          body.classList.add(newTheme + '-mode');
+          localStorage.setItem('theme', newTheme);
+        }
+      
+        function applySavedTheme() {
+          const savedTheme = localStorage.getItem('theme') || 'light';
+          document.body.classList.add(savedTheme + '-mode');
+        }
+      
+        document.addEventListener('DOMContentLoaded', applySavedTheme);
+      </script>
+</body>
+</html>
