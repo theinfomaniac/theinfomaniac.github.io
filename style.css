@@ -3,9 +3,9 @@
   --base-clr: #0e1010;
   --line-clr: #202324;
   --hover-clr: #3a3c3c;
-  --text-clr: #a6a6a6;
+  --text-clr: #e6eeef;
   --accent-clr: #5ef4ff;
-  --secondary-text-clr: #b0bdc1;
+  --secondary-text-clr: #a6a6a6;
 }
 *{
   margin: 0;
