@@ -152,161 +152,144 @@ body.dark-mode .navbar, body.dark-mode .container, body.dark-mode .assignment-ca
     </main>
 
     <script>
-    const STORAGE_KEY = 'savedClassSelections';
-    const predefinedClasses = [
-        "AP Human Geography", 
-        "Pre-AP Biology", 
-        "Theater 1", 
-        "Tech Theater 1", 
-        "Art 1", 
-        "English 1", 
-        "Pre-AP Algebra 2",
-        "Pre-AP Geometry",
-        "Pre-AP Algebra 1",
-        "Computer Science 1",
-        "PE / Health",
-        "Pre-AP Chemistry",
-        "Dance",
-        "Spanish I",
-        "Spanish II",
-        "Spanish III",
-        "French I",
-        "French II",
-        "French III",
-        "UIL Baseball",
-        "UIL Volleyball"
-    ];
-
-    let allAssignments = [];
-    let selectedClasses = new Set();
-
-    // Save class selections to localStorage
-    function saveClassSelections() {
-        const selections = {};
-        document.querySelectorAll('select').forEach(select => {
-            selections[select.id] = select.value;
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
-    }
-
-    // Load saved class selections from localStorage
-    function loadSavedSelections() {
-        try {
-            const savedSelections = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        const STORAGE_KEY = 'savedClassSelections';
+                const predefinedClasses = [
+            "AP Human Geography", 
+            "Pre-AP Biology", 
+            "Theater 1", 
+            "Tech Theater 1", 
+            "Art 1", 
+            "English 1", 
+            "Pre-AP Algebra 2",
+            "Pre-AP Geometry",
+            "Pre-AP Algebra 1",
+            "Computer Science 1",
+            "PE / Health",
+            "Pre-AP Chemistry",
+            "Dance",
+            "Spanish I",
+            "Spanish II",
+            "Spanish III",
+            "French I",
+            "French II",
+            "French III",
+            "UIL Baseball",
+            "UIL Volleyball"
+        ];
+        
+        let allAssignments = [];
+        let selectedClasses = new Set();
+        
+        // Save class selections to localStorage
+        function saveClassSelections() {
+            const selections = {};
             document.querySelectorAll('select').forEach(select => {
-                const savedValue = savedSelections[select.id];
-                if (savedValue && predefinedClasses.includes(savedValue)) {
-                    select.value = savedValue;
-                    if (savedValue !== '') {
-                        selectedClasses.add(savedValue);
-                        select.setAttribute('data-previous', savedValue);
-                    }
-                }
+                selections[select.id] = select.value;
             });
-            displayAssignments();
-        } catch (error) {
-            console.error('Error loading saved selections:', error);
-            localStorage.removeItem(STORAGE_KEY); // Clear potentially corrupted data
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
         }
-    }
-
-    // Placeholder function for fetching assignments (Google Sheets API removed)
-    async function fetchAssignments() {
-        try {
+        
+        // Load saved class selections from localStorage
+        function loadSavedSelections() {
+            try {
+                const savedSelections = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+                document.querySelectorAll('select').forEach(select => {
+                    const savedValue = savedSelections[select.id];
+                    if (savedValue && predefinedClasses.includes(savedValue)) {
+                        select.value = savedValue;
+                        if (savedValue !== '') {
+                            selectedClasses.add(savedValue);
+                            select.setAttribute('data-previous', savedValue);
+                        }
+                    }
+                });
+                displayAssignments();
+            } catch (error) {
+                console.error('Error loading saved selections:', error);
+                localStorage.removeItem(STORAGE_KEY); // Clear potentially corrupted data
+            }
+        }
+        
+// Placeholder function for fetching assignments (Google Sheets API removed)
+        async function fetchAssignments() {
+            try {
             // Simulate fetching assignments (replace this with actual API integration later)
             allAssignments = [
                 { subject: "AP Human Geography", dueDate: new Date(), title: "Assignment 1", dueDateStr: "2025-03-28" },
                 { subject: "Pre-AP Biology", dueDate: new Date(), title: "Assignment 2", dueDateStr: "2025-03-29" }
             ].sort((a, b) => a.dueDate - b.dueDate);
-
-            updateDropdowns();
-            loadSavedSelections(); // Load saved selections after dropdowns are populated
-        } catch (error) {
-            console.error('Error fetching assignments:', error);
-            document.getElementById('assignments-container').innerHTML = 
-                '<p>Error loading assignments. Please try again later.</p>';
-        }
-    }
-
-    function displayAssignments() {
-        const container = document.getElementById('assignments-container');
-        container.innerHTML = '';
-
-        let filteredAssignments = allAssignments;
-
-        if (selectedClasses.size > 0) {
-            filteredAssignments = allAssignments.filter(assignment => 
-                selectedClasses.has(assignment.subject)
-            );
-        }
-
-        if (filteredAssignments.length === 0) {
-            container.innerHTML = '<p>No assignments found for the selected classes.</p>';
-            return;
-        }
-
-        for (let i = 0; i < filteredAssignments.length; i += 3) {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'assignments-row';
-
-            for (let j = i; j < i + 3 && j < filteredAssignments.length; j++) {
-                const assignment = filteredAssignments[j];
-                
-                const card = document.createElement('div');
-                card.className = 'assignment-card glass-effect';
-                card.innerHTML = `
-                    <div class="assignment-header">
-                        <h3 class="assignment-title">${assignment.subject}</h3>
-                        <span class="due-date">${assignment.dueDateStr}</span>
-                    </div>
-                    <div class="assignment-content">
-                        <p class="assignment-details">${assignment.title}</p>
-                    </div>
-                `;
-                rowDiv.appendChild(card);
+        
+                updateDropdowns();
+                loadSavedSelections(); // Load saved selections after dropdowns are populated
+            } catch (error) {
+                console.error('Error fetching assignments:', error);
+                document.getElementById('assignments-container').innerHTML = 
+                    '<p>Error loading assignments. Please try again later.</p>';
             }
-
-            container.appendChild(rowDiv);
         }
-    }
-
-    function handleClassSelection(select) {
-        const selectedClass = select.value;
-
-        const oldClass = select.getAttribute('data-previous');
-        if (oldClass) {
-            selectedClasses.delete(oldClass);
+        
+        function displayAssignments() {
+            const container = document.getElementById('assignments-container');
+            container.innerHTML = '';
+        
+            let filteredAssignments = allAssignments;
+            
+            if (selectedClasses.size > 0) {
+                filteredAssignments = allAssignments.filter(assignment => 
+                    selectedClasses.has(assignment.subject)
+                );
+            }
+        
+            if (filteredAssignments.length === 0) {
+                container.innerHTML = '<p>No assignments found for the selected classes.</p>';
+                return;
+            }
+        
+            for (let i = 0; i < filteredAssignments.length; i += 3) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'assignments-row';
+        
+                for (let j = i; j < i + 3 && j < filteredAssignments.length; j++) {
+                    const assignment = filteredAssignments[j];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'assignment-card glass-effect';
+                    card.innerHTML = `
+                        <div class="assignment-header">
+                            <h3 class="assignment-title">${assignment.subject}</h3>
+                            <span class="due-date">${assignment.dueDateStr}</span>
+                        </div>
+                        <div class="assignment-content">
+                            <p class="assignment-details">${assignment.title}</p>
+                        </div>
+                    `;
+                    rowDiv.appendChild(card);
+                }
+        
+                container.appendChild(rowDiv);
+            }
         }
-
-        if (selectedClass) {
-            selectedClasses.add(selectedClass);
-            select.setAttribute('data-previous', selectedClass);
-        } else {
-            select.removeAttribute('data-previous');
+        
+        function handleClassSelection(select) {
+            const selectedClass = select.value;
+            
+            const oldClass = select.getAttribute('data-previous');
+            if (oldClass) {
+                selectedClasses.delete(oldClass);
+            }
+        
+            if (selectedClass) {
+                selectedClasses.add(selectedClass);
+                select.setAttribute('data-previous', selectedClass);
+            } else {
+                select.removeAttribute('data-previous');
+            }
+        
+            saveClassSelections(); // Save selections after any change
+            displayAssignments();
         }
-
-        saveClassSelections(); // Save selections after any change
-        displayAssignments();
-    }
-
-    function updateDropdowns() {
-        const selectElements = document.querySelectorAll('select');
-
-        selectElements.forEach(select => {
-            select.innerHTML = "<option value=''>---</option>";
-            predefinedClasses.forEach(classOption => {
-                const option = document.createElement('option');
-                option.value = classOption;
-                option.text = classOption;
-                select.appendChild(option);
-            });
-
-            select.addEventListener('change', () => handleClassSelection(select));
-        });
-
-        displayAssignments();
-    }
-
+        
+     
         async function loadNav() {
             try {
                 const response = await fetch('https://interlinkcvhs.org/navnav.html');
@@ -363,13 +346,89 @@ body.dark-mode .navbar, body.dark-mode .container, body.dark-mode .assignment-ca
             console.error('Failed to fetch assignments:', error);
           }
         }
-
-    document.addEventListener('DOMContentLoaded', () => {
-loadBanner();
+   function updateDropdowns() {
+            const selectElements = document.querySelectorAll('select');
+            
+            selectElements.forEach(select => {
+                select.innerHTML = "<option value=''>---</option>";
+                predefinedClasses.forEach(classOption => {
+                    const option = document.createElement('option');
+                    option.value = classOption;
+                    option.text = classOption;
+                    select.appendChild(option);
+                });
+        
+                select.addEventListener('change', () => handleClassSelection(select));
+            });
+        
+            displayAssignments();
+        }
+        
+        async function loadNav() {
+            try {
+                const response = await fetch('https://interlinkcvhs.org/navnav.html');
+                const nav = await response.text();
+                document.getElementById('nav-container').innerHTML = nav;
+            } catch (error) {
+                console.error('Error loading navigation:', error);
+                document.getElementById('nav-container').innerHTML = 
+                    '<p>Error loading navigation. Please try again later.</p>';
+            }
+        }
+        
+        async function loadBanner() {
+            try {
+                const response = await fetch('https://interlinkcvhs.org/banner.html');
+                const bannerContent = await response.text();
+                document.getElementById('banner-container').innerHTML = bannerContent;
+            } catch (error) {
+                console.error('Error loading banner:', error);
+                document.getElementById('banner-container').innerHTML = 
+                    '<p>Error loading banner. Please try again later.</p>';
+            }
+        }
+        
+        async function fetchCourses() {
+          const url = `${CANVAS_BASE_URL}/courses`;
+          try {
+            const response = await fetch(url, {
+              headers: {
+                Authorization: `Bearer ${API_TOKEN}`,
+              },
+            });
+            if (!response.ok) {
+              throw new Error(`Error: ${response.statusText}`);
+            }
+            const courses = await response.json();
+            console.log(courses); // Process and display courses
+          } catch (error) {
+    loadBanner();
             loadNav();
-        fetchAssignments();
-    });
-</script>
+        console.error('Failed to fetch courses:', error);
+          }
+        }
+        
+        async function fetchAssignments(courseId) {
+          const url = `${CANVAS_BASE_URL}/courses/${courseId}/assignments`;
+          try {
+            const response = await fetch(url, {
+              headers: {
+                Authorization: `Bearer ${API_TOKEN}`,
+              },
+            });
+            const assignments = await response.json();
+            console.log(assignments); // Process and display assignments
+          } catch (error) {
+            console.error('Failed to fetch assignments:', error);
+          }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBanner();
+            loadNav();
+            fetchAssignments();
+        });
+    </script>
     <script>
         function toggleTheme() {
           const body = document.body;
