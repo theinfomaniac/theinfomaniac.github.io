@@ -839,8 +839,15 @@
             </div>
         </div>
     </div>
-
+<div>
+    <button onclick="testCanvasUrl()">Test Canvas URL</button>
+    <button onclick="showCurlCommand()">Show cURL Test</button>
+    <button onclick="connectCanvasWithProxy()">Try with Proxy</button>
+</div>
 <script>
+
+  testCanvasUrl(); // Test if Canvas site is reachable
+showCurlCommand(); // Get command to test credentials
 // Data Storage
 let classes = JSON.parse(localStorage.getItem('classes')) || [];
 let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
