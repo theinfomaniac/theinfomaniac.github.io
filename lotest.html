@@ -1149,6 +1149,7 @@
                 <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                     <button class="btn btn-primary" onclick="connectCanvas()">🔗 Connect to Canvas</button>
                    <button class="btn btn-success" onclick="syncCanvasWithRetry()" id="syncBtn" disabled>🔄 Sync Data</button>
+                   <button class="btn btn-danger" onclick="disconnectCanvas()" id="disconnectBtn" disabled>🔌 Disconnect</button>
                 </div>
                 
                 <div id="canvasStatus" style="padding: 15px; background: rgba(255,255,255,0.5); border-radius: 8px; margin-top: 15px;">
@@ -2132,6 +2133,7 @@ async function connectCanvas() {
             connectBtn.style.backgroundColor = '#38a169';
             
             document.getElementById('syncBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = false;
             
         } else {
             throw new Error(`Connection failed: ${response.status}`);
@@ -2149,6 +2151,20 @@ async function connectCanvas() {
         connectBtn.style.backgroundColor = '';
         
         logSync('Connection failed: CORS restriction. Try manual import.');
+    }
+    // After successful connection, enable the disconnect button
+    if (connectionSuccessful) {
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        if (disconnectBtn) disconnectBtn.disabled = false;
+        
+        const syncBtn = document.getElementById('syncBtn');
+        if (syncBtn) syncBtn.disabled = false;
+        
+        // Update connect button to show connected state
+        const connectBtn = document.querySelector('button[onclick="connectCanvas()"]');
+        if (connectBtn) {
+            connectBtn.disabled = true; // Disable since already connected
+        }
     }
 }
 
@@ -2552,27 +2568,56 @@ function logSync(message) {
     }
 }
 
+
+// Function to enable disconnect button after successful connection
+function enableDisconnectButton() {
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    if (disconnectBtn) {
+        disconnectBtn.disabled = false;
+    }
+    
+    const syncBtn = document.getElementById('syncBtn');
+    if (syncBtn) {
+        syncBtn.disabled = false;
+    }
+}
+
 // Disconnect function
 function disconnectCanvas() {
     if (confirm('Are you sure you want to disconnect from Canvas? This will not delete your synced data.')) {
+        // Clear stored credentials
         localStorage.removeItem('canvasUrl');
         localStorage.removeItem('canvasToken');
         
-        // Reset UI
+        // Reset connection status
         const statusEl = document.getElementById('connectionStatus');
         if (statusEl) statusEl.textContent = 'Not Connected';
         
+        // Reset button states - DISABLE sync and disconnect buttons
         const syncBtn = document.getElementById('syncBtn');
         if (syncBtn) syncBtn.disabled = true;
         
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        if (disconnectBtn) disconnectBtn.disabled = true;
+        
+        // Re-enable and reset connect button
         const connectBtn = document.querySelector('button[onclick="connectCanvas()"]');
         if (connectBtn) {
-            connectBtn.textContent = 'Connect Canvas';
+            connectBtn.textContent = '🔗 Connect to Canvas';
+            connectBtn.disabled = false;
             connectBtn.style.backgroundColor = '';
+            connectBtn.className = 'btn btn-primary';
         }
         
+        // Update any other UI elements that depend on connection status
         updateCanvasStatus();
+        
+        // Log the disconnection
         logSync('Disconnected from Canvas');
+        
+        // Optional: Clear any cached data or reset other connection-related variables
+        // window.canvasConnected = false;
+        // window.canvasInstance = null;
     }
 }
 
