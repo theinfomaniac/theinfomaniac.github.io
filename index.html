@@ -1323,20 +1323,20 @@
         
         <div class="stats-grid" style="margin-bottom: 30px;">
             <div class="stat-card" style="background: linear-gradient(135deg, #ff6b9d, #c44569);">
-                <div class="stat-number">13</div>
+                <div class="stat-number">8</div>
                 <div class="stat-label">Studio Albums</div>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #ffa726, #fb8c00);">
-                <div class="stat-number">2020</div>
-                <div class="stat-label">Grammy Win Year</div>
+                <div class="stat-number">OFWGKTA</div>
+                <div class="stat-label">Odd Future Wolf Gang Kill Them All</div>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #66bb6a, #43a047);">
-                <div class="stat-number">Golf</div>
-                <div class="stat-label">Wang Brand</div>
+                <div class="stat-number">Golf Wang</div>
+                <div class="stat-label">Clothing Brand</div>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #42a5f5, #1e88e5);">
-                <div class="stat-number">Odd</div>
-                <div class="stat-label">Future Collective</div>
+                <div class="stat-number">Golf Le Fleur</div>
+                <div class="stat-label">Fashion Brand</div>
             </div>
         </div>
     </div>
@@ -1384,6 +1384,21 @@
                 <div class="album-title">Call Me If You Get Lost (2021)</div>
                 <div class="album-description">Travel-themed album showcasing lyrical prowess and confidence</div>
                 <div class="album-mood">Adventurous & Mature</div>
+            </div>
+
+            <div class="tyler-album-card" style="background: linear-gradient(135deg, #95dce6, #4e2e13); color: white;">
+                <ereerasd="https://open.spotify.com/album/0U28P0QVB1QRxpqp5IHOlH?si=cb4a71db37df488c" target="_blank">
+                    <div class="album-title">Call Me If You Get Lost: The Estate Sale (2023)</div>
+                    <div class="album-description">The extension of CMIYGL that dives deeper into the travel themes</div>
+                    <div class="album-mood">Adventurous & Mature</div>
+                </a>
+            </div>
+            <div class="tyler-album-card" style="background: linear-gradient(135deg, #343b35, #00853C); color: white;">
+                <ereerasd="https://open.spotify.com/album/0U28P0QVB1QRxpqp5IHOlH?si=cb4a71db37df488c" target="_blank">
+                    <div class="album-title">CHROMAKOPIA (2024)</div>
+                    <div class="album-description">Introspective album exploring identity, masks, and vulnerability through experimental production</div>
+                    <div class="album-mood">Complex & Transformative</div>
+                </a>
             </div>
         </div>
     </div>
@@ -3416,6 +3431,67 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize grade sync functionality
     initializeGradeSync();
 });
+// Song library for Tyler, The Creator
+const tylerSongLibrary = {
+    focus: [
+
+        "Garden Shed", "Glitter", "November", "MASSA", "WUSYANAME", "GONE, GONE / THANK YOU",
+        "AWKWARD", "Treehome95", "FIND YOUR WINGS", "2SEATER",
+        "OKAGA, CA", "BLOWN AWAY", "KEEP DA O'S", "PartyIsntOver/Campfire/Bimmer",
+        "Slater", "PERFECT", "Take Your Mask Off", "Like Him", "Hey Jane",
+        "Foreword", "WHERE THIS FLOWER BLOOMS", "Pothole", "See You Again",
+        "Sometimes...", "Ingleside", "Answer", "Colossus", "Rusty"
+    ],
+    
+    creative: [
+
+        "See You Again", "EARFQUAKE", "NEW MAGIC WAND", "CORSO", "SWEET / I THOUGHT YOU WANTED TO DANCE",
+        "A BOY IS A GUN*", "I THINK", "JUGGERNAUT", "SIR BAUDELAIRE", "DEATHCAMP",
+        "St. Chroma", "Rah Tah Tah", "Noid", "Darling, I", "Sticky",
+        "Judge Judy", "Thought I Was Dead", "Like Him", "Balloon",
+        "PUFF", "RISE!", "IGOR'S THEME", "PUPPET", "GONE, GONE / THANK YOU",
+        "OKAGA, CA", "Cherry Bomb", "SMOG", "2SEATER", "THE BROWN STAINS OF DARKEESE LATIFAH PART 6-12",
+        "BUFFALO", "F* Young / Perfect", "Deathcamp", "Pilot"
+    ],
+    
+    chill: [
+        
+        "BEST INTEREST", "Boredom", "RUNNING OUT OF TIME", "SAFARI", "I THINK", "ENJOY RIGHT NOW, TODAY",
+        "F* YOUNG / PERFECT", "911 / Mr. Lonely", "Potato Salad", "PEACH FUZZ",
+        "Tomorrow", "I Hope You Find Your Way Home", "HEAVEN TO ME", "BLESSED",
+        "EXACTLY WHAT YOU RUN FROM YOU END UP CHASING", "DOGTOOTH", "HOT WIND BLOWS",
+        "LUMBERJACK", "WILSHIRE", "Droppin' Seeds", "OKAGA, CA", "F* YOUNG / PERFECT",
+        "WHERE THIS FLOWER BLOOMS", "Boredom", "November", "Glitter",
+        "Window", "Ingleside", "48", "IFHY", "Jamba", "VCR"
+    ],
+    
+    energy: [
+        
+        "LEMONHEAD", "JUGGERNAUT", "WHO DAT BOY", "SMUCKERS", "Tamale", "WHAT'S GOOD",
+        "NEW MAGIC WAND", "Yonkers", "Rella", "I Ain't Got Time!",
+        "Sticky", "Rah Tah Tah", "Thought I Was Dead", "WUSYANAME", "LUMBERJACK",
+        "HOT WIND BLOWS", "CORSO", "MASSA", "JUGGERNAUT", "WHAT'S GOOD",
+        "Who Dat Boy", "I Ain't Got Time!", "Domo23", "Tamale", "Trouble On My Mind",
+        "Cherry Bomb", "DEATHCAMP", "SMOG", "2SEATER", "BUFFALO",
+        "Tron Cat", "Yonkers", "She", "Radicals", "B.S.D.", "Window",
+        "Sandwitches", "A**Milk", "Bastard", "Seven", "Odd Toddlers"
+    ],
+    
+    introspective: [
+        
+        "PUPPET", "ARE WE STILL FRIENDS?", "Answer", "WILSHIRE", "48",
+        "911 / Mr. Lonely", "IFHY", "Colossus", "Lone", "Her",
+        "Take Your Mask Off", "Hey Jane", "I Hope You Find Your Way Home", 
+        "Like Him", "Judge Judy", "Tomorrow", "Darling, I", "HEAVEN TO ME",
+        "BLESSED", "EXACTLY WHAT YOU RUN FROM YOU END UP CHASING", "ARE WE STILL FRIENDS?",
+        "THANK YOU", "I DON'T LOVE YOU ANYMORE", "GONE, GONE / THANK YOU",
+        "PUPPET", "A BOY IS A GUN*", "IGOR'S THEME", "Boredom", "Foreword",
+        "911 / Mr. Lonely", "Dropping Seeds", "Garden Shed", "Glitter",
+        "FIND YOUR WINGS", "Answer", "Colossus", "Lone", "48", "IFHY",
+        "Goblin", "Her", "AU79", "Golden", "Awkward", "PartyIsntOver"
+    ]
+};
+
 function generatePlaylistSuggestions() {
     const mood = document.getElementById('studyMood').value;
     const subject = document.getElementById('studySubject').value;
@@ -3426,95 +3502,47 @@ function generatePlaylistSuggestions() {
         return;
     }
     
-    const suggestions = {
-        focus: {
-            title: "Deep Focus Flow",
-            description: "Calmer Tyler tracks and instrumentals perfect for deep concentration and analytical work.",
-            songs: [
-                "Garden Shed (Flower Boy)",
-                "Glitter (Flower Boy)", 
-                "November (Flower Boy)",
-                "MASSA (Call Me If You Get Lost)",
-                "WUSYANAME (Call Me If You Get Lost)",
-                "GONE, GONE / THANK YOU (IGOR)"
-            ]
-        },
-        creative: {
-            title: "Creative Expression Mode",
-            description: "Colorful, experimental tracks that spark imagination and artistic flow.",
-            songs: [
-                "See You Again ft. Kali Uchis (Flower Boy)",
-                "EARFQUAKE (IGOR)",
-                "NEW MAGIC WAND (IGOR)",
-                "CORSO (Call Me If You Get Lost)",
-                "SWEET / I THOUGHT YOU WANTED TO DANCE (Call Me If You Get Lost)",
-                "FIND YOUR WINGS ft. Kali Uchis (Cherry Bomb)"
-            ]
-        },
-        chill: {
-            title: "Laid-Back Study Sessions",
-            description: "Mellow, dreamy tracks for relaxed learning and reading sessions.",
-            songs: [
-                "BEST INTEREST (Flower Boy)",
-                "Boredom ft. Rex Orange County (Flower Boy)",
-                "RUNNING OUT OF TIME (IGOR)",
-                "SAFARI (Call Me If You Get Lost)",
-                "I THINK (IGOR)",
-                "ENJOY RIGHT NOW, TODAY (Cherry Bomb)"
-            ]
-        },
-        energy: {
-            title: "High-Energy Hustle",
-            description: "Motivational and energetic tracks to power through challenging study sessions.",
-            songs: [
-                "LEMONHEAD (Call Me If You Get Lost)",
-                "JUGGERNAUT (Call Me If You Get Lost)",
-                "WHO DAT BOY (Flower Boy)",
-                "SMUCKERS ft. Kanye West (Cherry Bomb)",
-                "Tamale (Wolf)",
-                "WHAT'S GOOD (IGOR)"
-            ]
-        },
-        introspective: {
-            title: "Thoughtful Reflection",
-            description: "Deeper, more contemplative tracks for subjects requiring critical thinking.",
-            songs: [
-                "PUPPET (IGOR)",
-                "ARE WE STILL FRIENDS? (IGOR)",
-                "Answer (Wolf)",
-                "Awkward (Flower Boy)",
-                "WILSHIRE (Call Me If You Get Lost)",
-                "48 (Cherry Bomb)"
-            ]
-        }
+    const songsForMood = tylerSongLibrary[mood];
+    if (!songsForMood || songsForMood.length === 0) {
+        suggestionsDiv.innerHTML = '<p style="color: #718096;">No songs found for this mood.</p>';
+        return;
+    }
+
+    // Shuffle the array and pick the first 5-7 songs
+    const shuffled = songsForMood.sort(() => 0.5 - Math.random());
+    const selectedSongs = shuffled.slice(0, Math.floor(Math.random() * 3) + 5); // Randomly pick 5, 6, or 7 songs
+
+    const suggestionTemplates = {
+        focus: { title: "Deep Focus Flow", description: "Calmer Tyler tracks and instrumentals perfect for deep concentration." },
+        creative: { title: "Creative Expression Mode", description: "Colorful, experimental tracks that spark imagination." },
+        chill: { title: "Laid-Back Study Sessions", description: "Mellow, dreamy tracks for relaxed learning." },
+        energy: { title: "High-Energy Hustle", description: "Motivational tracks to power through challenging sessions." },
+        introspective: { title: "Thoughtful Reflection", description: "Deeper, contemplative tracks for critical thinking." }
     };
     
-    const suggestion = suggestions[mood];
-    if (suggestion) {
-        const songsList = suggestion.songs.map(song => 
-            `<div class="song-item">🎵 ${song}</div>`
-        ).join('');
+    const suggestion = suggestionTemplates[mood];
+    const songsList = selectedSongs.map(song => `<div class="song-item">🎵 ${song}</div>`).join('');
         
         suggestionsDiv.innerHTML = `
             <div class="playlist-suggestion">
                 <div class="playlist-title">${suggestion.title}</div>
                 <div class="playlist-description">${suggestion.description}</div>
-                <div class="songs-list">
-                    <div class="songs-header">Recommended Tyler Songs:</div>
+            <div style="margin-top: 15px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Your Randomly Generated Playlist:</div>
                     ${songsList}
                 </div>
             </div>
             <div style="margin-top: 15px; padding: 12px; background: #f0f9ff; border-radius: 8px; font-size: 0.9rem; color: #1e40af;">
-                💡 Tip: Search for these songs on your preferred music platform to create your study playlist!
+            💡 Tip: Click the "Generate" button again for a new random selection!
             </div>
         `;
     }
-}
-// Tyler tab visibility logic with unlock animation
+
+
+// Tyler tab visibility logic
 let canvasClickCount = 0;
 let tylerTabVisible = false;
 
-// Override the original showTab function to add Canvas click tracking
 const originalShowTab = window.showTab;
 window.showTab = function(tabName) {
    if (tabName === 'canvas') {
@@ -3570,7 +3598,7 @@ function showTylerTab() {
        
        const unlockContent = document.createElement('div');
        unlockContent.style.cssText = `
-           background: linear-gradient(135deg, #ffd700, #ffeb3b);
+           background: linear-gradient(135deg, #ffffff, #999999);
            padding: 40px;
            border-radius: 20px;
            text-align: center;
@@ -3580,10 +3608,10 @@ function showTylerTab() {
        `;
        
        unlockContent.innerHTML = `
-           <div style="font-size: 4rem; margin-bottom: 20px; animation: spin 1s ease-in-out;">🎵</div>
+           <div style="font-size: 4rem; margin-bottom: 20px; animation: spin 1s ease-in-out;">🐝</div>
            <h2 style="color: #333; margin-bottom: 15px; font-size: 2rem;">Secret Unlocked!</h2>
            <p style="color: #666; font-size: 1.2rem; margin-bottom: 20px;">Tyler, The Creator tab is now available</p>
-           <div style="font-size: 1.5rem; color: #ff6b9d;">✨ Stay creative! ✨</div>
+           <div style="font-size: 1.5rem; color: #333;">✨ IGOR OUT NOW! ✨</div>
        `;
        
        unlockOverlay.appendChild(unlockContent);
@@ -3632,7 +3660,6 @@ function showTylerTab() {
                // Show Tyler tab with special animation
                tylerButton.style.display = 'block';
                tylerButton.style.animation = 'tylerReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards';
-               tylerButton.style.background = 'linear-gradient(135deg, #ffd700, #ffeb3b)';
                tylerButton.style.color = '#333';
                tylerButton.style.boxShadow = '0 5px 15px rgba(255, 215, 0, 0.4)';
                
@@ -3689,8 +3716,10 @@ function createSparkle(element) {
 // Hide Tyler tab initially
 document.addEventListener('DOMContentLoaded', function() {
    const tylerButton = document.querySelector('[onclick="showTab(\'tyler\')"]');
-   if (tylerButton) {
-       tylerButton.style.display = 'none';
-   }
+   if (tylerButton) tylerButton.style.display = 'none';
+   const style = document.createElement('style');
+   style.textContent = `@keyframes tada{from{transform:scale3d(1,1,1)}10%,20%{transform:scale3d(.9,.9,.9) rotate3d(0,0,1,-3deg)}30%,50%,70%,90%{transform:scale3d(1.1,1.1,1.1) rotate3d(0,0,1,3deg)}40%,60%,80%{transform:scale3d(1.1,1.1,1.1) rotate3d(0,0,1,-3deg)}to{transform:scale3d(1,1,1)}}`;
+   document.head.appendChild(style);
 });
+
 </script>
