@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tyler, The Creator - Student Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+    <nav id="sidebar">
+        <!-- Sidebar content is identical across all pages -->
+    </nav>
+    <main>
+        <div class="main-container">
+            <div class="page-header">
+                <h1>Tyler, The Creator Hub</h1>
+                <p>Channel your creative energy with inspiration from Tyler Okonma's artistic journey.</p>
+            </div>
+
+            <div class="content-section">
+                <h2>Album Evolution</h2>
+                <div class="tyler-albums-grid">
+                    <!-- Album cards will be generated here -->
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>Study Playlist Generator</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studyMood">Select a Study Mood</label>
+                        <select id="studyMood">
+                            <option value="">Select...</option>
+                            <option value="focus">Deep Focus</option>
+                            <option value="creative">Creative Flow</option>
+                            <option value="chill">Chill Vibes</option>
+                            <option value="energy">High Energy</option>
+                            <option value="introspective">Introspective</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="generatePlaylistSuggestions()">🎵 Generate Playlist</button>
+                <div id="playlistSuggestions" style="margin-top: 1.5rem;"></div>
+            </div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+    <script>
+        const albums = [
+            { title: 'Bastard (2009)', mood: 'Dark & Experimental', color: 'linear-gradient(135deg, #350000, #5a0e0e)'},
+            { title: 'Goblin (2011)', mood: 'Intense & Provocative', color: 'linear-gradient(135deg, #007b8b, #44afb3)'},
+            { title: 'Wolf (2013)', mood: 'Narrative & Growth', color: 'linear-gradient(135deg, #93e6c6, #69f5ff)', textColor: '#333' },
+            { title: 'Cherry Bomb (2015)', mood: 'Bold & Jazzy', color: 'linear-gradient(135deg, #e14141, #ff0000)' },
+            { title: 'Flower Boy (2017)', mood: 'Colorful & Honest', color: 'linear-gradient(135deg, #ffd700, #ffeb3b)', textColor: '#333' },
+            { title: 'IGOR (2019)', mood: 'Emotional & Theatrical', color: 'linear-gradient(135deg, #f7b4c6, #b67c8c)', textColor: '#333' },
+            { title: 'Call Me If You Get Lost (2021)', mood: 'Adventurous & Mature', color: 'linear-gradient(135deg, #b9fff0, #32cd32)', textColor: '#333' }
+        ];
+
+        const tylerSongLibrary = {
+            focus: [
+
+        "Garden Shed", "Glitter", "November", "MASSA", "WUSYANAME", "GONE, GONE / THANK YOU",
+        "AWKWARD", "Treehome95", "FIND YOUR WINGS", "2SEATER",
+        "OKAGA, CA", "BLOWN AWAY", "KEEP DA O'S", "PartyIsntOver/Campfire/Bimmer",
+        "Slater", "PERFECT", "Take Your Mask Off", "Like Him", "Hey Jane",
+        "Foreword", "WHERE THIS FLOWER BLOOMS", "Pothole", "See You Again",
+        "Sometimes...", "Ingleside", "Answer", "Colossus", "Rusty"
+    ],
+    
+    creative: [
+
+        "See You Again", "EARFQUAKE", "NEW MAGIC WAND", "CORSO", "SWEET / I THOUGHT YOU WANTED TO DANCE",
+        "A BOY IS A GUN*", "I THINK", "JUGGERNAUT", "SIR BAUDELAIRE", "DEATHCAMP",
+        "St. Chroma", "Rah Tah Tah", "Noid", "Darling, I", "Sticky",
+        "Judge Judy", "Thought I Was Dead", "Like Him", "Balloon",
+        "PUFF", "RISE!", "IGOR'S THEME", "PUPPET", "GONE, GONE / THANK YOU",
+        "OKAGA, CA", "Cherry Bomb", "SMOG", "2SEATER", "THE BROWN STAINS OF DARKEESE LATIFAH PART 6-12",
+        "BUFFALO", "F* Young / Perfect", "Deathcamp", "Pilot"
+    ],
+    
+    chill: [
+        
+        "BEST INTEREST", "Boredom", "RUNNING OUT OF TIME", "SAFARI", "I THINK", "ENJOY RIGHT NOW, TODAY",
+        "F* YOUNG / PERFECT", "911 / Mr. Lonely", "Potato Salad", "PEACH FUZZ",
+        "Tomorrow", "I Hope You Find Your Way Home", "HEAVEN TO ME", "BLESSED",
+        "EXACTLY WHAT YOU RUN FROM YOU END UP CHASING", "DOGTOOTH", "HOT WIND BLOWS",
+        "LUMBERJACK", "WILSHIRE", "Droppin' Seeds", "OKAGA, CA", "F* YOUNG / PERFECT",
+        "WHERE THIS FLOWER BLOOMS", "Boredom", "November", "Glitter",
+        "Window", "Ingleside", "48", "IFHY", "Jamba", "VCR"
+    ],
+    
+    energy: [
+        
+        "LEMONHEAD", "JUGGERNAUT", "WHO DAT BOY", "SMUCKERS", "Tamale", "WHAT'S GOOD",
+        "NEW MAGIC WAND", "Yonkers", "Rella", "I Ain't Got Time!",
+        "Sticky", "Rah Tah Tah", "Thought I Was Dead", "WUSYANAME", "LUMBERJACK",
+        "HOT WIND BLOWS", "CORSO", "MASSA", "JUGGERNAUT", "WHAT'S GOOD",
+        "Who Dat Boy", "I Ain't Got Time!", "Domo23", "Tamale", "Trouble On My Mind",
+        "Cherry Bomb", "DEATHCAMP", "SMOG", "2SEATER", "BUFFALO",
+        "Tron Cat", "Yonkers", "She", "Radicals", "B.S.D.", "Window",
+        "Sandwitches", "A**Milk", "Bastard", "Seven", "Odd Toddlers"
+    ],
+    
+    introspective: [
+        
+        "PUPPET", "ARE WE STILL FRIENDS?", "Answer", "WILSHIRE", "48",
+        "911 / Mr. Lonely", "IFHY", "Colossus", "Lone", "Her",
+        "Take Your Mask Off", "Hey Jane", "I Hope You Find Your Way Home", 
+        "Like Him", "Judge Judy", "Tomorrow", "Darling, I", "HEAVEN TO ME",
+        "BLESSED", "EXACTLY WHAT YOU RUN FROM YOU END UP CHASING", "ARE WE STILL FRIENDS?",
+        "THANK YOU", "I DON'T LOVE YOU ANYMORE", "GONE, GONE / THANK YOU",
+        "PUPPET", "A BOY IS A GUN*", "IGOR'S THEME", "Boredom", "Foreword",
+        "911 / Mr. Lonely", "Dropping Seeds", "Garden Shed", "Glitter",
+        "FIND YOUR WINGS", "Answer", "Colossus", "Lone", "48", "IFHY",
+        "Goblin", "Her", "AU79", "Golden", "Awkward", "PartyIsntOver"
+    ]
+        };
+
+        function renderAlbums() {
+            const container = document.querySelector('.tyler-albums-grid');
+            container.innerHTML = albums.map(album => `
+                 <a href="https://www.google.com/search?q=Tyler+The+Creator+${album.title.replace(' ', '+')}" target="_blank" class="tyler-album-card" style="background: ${album.color}; color: ${album.textColor || 'white'}">
+                    <div class="album-title">${album.title}</div>
+                    <div class="album-mood">${album.mood}</div>
+                </a>
+            `).join('');
+        }
+
+        function generatePlaylistSuggestions() {
+            const mood = document.getElementById('studyMood').value;
+            const suggestionsDiv = document.getElementById('playlistSuggestions');
+            if (!mood) {
+                suggestionsDiv.innerHTML = '<p>Please select a mood first.</p>';
+                return;
+            }
+            
+            const songsForMood = tylerSongLibrary[mood];
+            const shuffled = songsForMood.sort(() => 0.5 - Math.random());
+            const selectedSongs = shuffled.slice(0, 5);
+            
+            suggestionsDiv.innerHTML = `<h3>Your ${mood} Playlist:</h3>` + selectedSongs.map(song => `<p>🎵 ${song}</p>`).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', renderAlbums);
+    </script>
+</body>
+</html>

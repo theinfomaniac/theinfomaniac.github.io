@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Integration - Student Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+    <nav id="sidebar">
+        <!-- Sidebar content is identical across all pages -->
+    </nav>
+    <main>
+        <div class="main-container">
+            <div class="page-header">
+                <h1>Canvas LMS Integration</h1>
+                <p>Connect your Canvas account to automatically sync courses and assignments.</p>
+            </div>
+            <div class="content-section">
+                <h2>Connect to Canvas</h2>
+                 <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Direct API connection may be limited by browser security (CORS). If the connection fails, use the manual import option.</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="canvasUrl">Canvas Instance URL</label>
+                        <input type="url" id="canvasUrl" placeholder="https://yourschool.instructure.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="canvasToken">Access Token</label>
+                        <input type="password" id="canvasToken" placeholder="Your Canvas API token">
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="connectCanvas()">🔗 Connect</button>
+                    <button class="btn btn-secondary" onclick="syncCanvas()" id="syncBtn" disabled>🔄 Sync Data</button>
+                    <button class="btn btn-danger" onclick="disconnectCanvas()" id="disconnectBtn" disabled>🔌 Disconnect</button>
+                </div>
+                <div id="canvasStatus" style="margin-top: 1rem;">Status: Not Connected</div>
+            </div>
+            <div class="content-section">
+                <h2>Sync Log</h2>
+                <div id="syncLog" style="max-height: 200px; overflow-y: auto; background: var(--primary-bg); padding: 1rem; border-radius: 8px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCanvasStatus();
+            const savedUrl = localStorage.getItem('canvasUrl');
+            if(savedUrl) document.getElementById('canvasUrl').value = savedUrl;
+        });
+
+        function logSync(message) {
+            const log = document.getElementById('syncLog');
+            if (log) {
+                log.innerHTML = `<div><span style="color:var(--text-secondary);">${new Date().toLocaleTimeString()}:</span> ${message}</div>` + log.innerHTML;
+            }
+        }
+        
+        async function connectCanvas() {
+            const url = document.getElementById('canvasUrl').value.trim();
+            const token = document.getElementById('canvasToken').value.trim();
+            if (!url || !token) {
+                alert('Please provide both Canvas URL and Access Token.');
+                return;
+            }
+            logSync('Attempting to connect...');
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            try {
+                const response = await fetch(`${proxyUrl}${encodeURIComponent(`${url}/api/v1/users/self?access_token=${token}`)}`);
+                if (!response.ok) throw new Error(`Connection failed with status: ${response.status}`);
+                await response.json(); // Test if response is valid JSON
+                localStorage.setItem('canvasUrl', url);
+                localStorage.setItem('canvasToken', token);
+                updateCanvasStatus(true);
+                logSync('✅ Successfully connected to Canvas!');
+            } catch (error) {
+                logSync(`❌ Connection failed: ${error.message}. Check URL and token, or try manual import due to CORS.`);
+                updateCanvasStatus(false);
+            }
+        }
+        
+        async function syncCanvas() {
+            logSync('Starting sync...');
+            const url = localStorage.getItem('canvasUrl');
+            const token = localStorage.getItem('canvasToken');
+            if (!url || !token) {
+                logSync('Error: Not connected to Canvas.');
+                return;
+            }
+
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            let classes = JSON.parse(localStorage.getItem('classes')) || [];
+            let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            let syncedCourses = 0, syncedAssignments = 0;
+
+            try {
+                const coursesResponse = await fetch(`${proxyUrl}${encodeURIComponent(`${url}/api/v1/courses?enrollment_state=active&per_page=50&access_token=${token}`)}`);
+                const canvasCourses = await coursesResponse.json();
+
+                for (const course of canvasCourses) {
+                    if (!course.name || course.workflow_state === 'completed') continue;
+                    let classObj = classes.find(c => c.canvasId === course.id);
+                    if (!classObj) {
+                        classObj = { id: Date.now() + Math.random(), name: course.name, code: course.course_code, canvasId: course.id };
+                        classes.push(classObj);
+                        syncedCourses++;
+                    }
+
+                    const assignmentsResponse = await fetch(`${proxyUrl}${encodeURIComponent(`${url}/api/v1/courses/${course.id}/assignments?per_page=100&access_token=${token}`)}`);
+                    const courseAssignments = await assignmentsResponse.json();
+                    
+                    for (const assignment of courseAssignments) {
+                        if (!assignment.name || assignments.find(a => a.canvasId === assignment.id)) continue;
+                        assignments.push({
+                            id: Date.now() + Math.random(), name: assignment.name, classId: classObj.id,
+                            dueDate: assignment.due_at || new Date(Date.now() + 7 * 86400000).toISOString(),
+                            points: assignment.points_possible || 100, canvasId: assignment.id,
+                            completed: false, grade: null
+                        });
+                        syncedAssignments++;
+                    }
+                }
+                localStorage.setItem('classes', JSON.stringify(classes));
+                localStorage.setItem('assignments', JSON.stringify(assignments));
+                logSync(`✅ Sync complete! Added ${syncedCourses} courses and ${syncedAssignments} assignments.`);
+            } catch (error) {
+                logSync(`❌ Sync failed: ${error.message}`);
+            }
+        }
+
+        function disconnectCanvas() {
+            if (confirm('Are you sure you want to disconnect?')) {
+                localStorage.removeItem('canvasUrl');
+                localStorage.removeItem('canvasToken');
+                updateCanvasStatus(false);
+                logSync('Disconnected from Canvas.');
+            }
+        }
+        
+        function updateCanvasStatus(connected = null) {
+            if (connected === null) connected = !!localStorage.getItem('canvasToken');
+            document.getElementById('canvasStatus').textContent = `Status: ${connected ? 'Connected' : 'Not Connected'}`;
+            document.getElementById('syncBtn').disabled = !connected;
+            document.getElementById('disconnectBtn').disabled = !connected;
+        }
+    </script>
+</body>
+</html>

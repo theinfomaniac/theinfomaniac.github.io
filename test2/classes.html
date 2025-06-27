@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classes - Student Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+    <nav id="sidebar">
+        <!-- The sidebar content is identical across all pages -->
+        <!-- It will be inserted here by the app.js script -->
+    </nav>
+
+    <main>
+        <div class="main-container">
+            <div class="page-header">
+                <h1>Manage Classes</h1>
+                <p>Add, edit, and view all your courses for the semester.</p>
+            </div>
+
+            <div class="content-section">
+                <h2>Add or Edit Class</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="className">Class Name *</label>
+                        <input type="text" id="className" placeholder="e.g., Advanced Mathematics">
+                    </div>
+                    <div class="form-group">
+                        <label for="classCode">Class Code</label>
+                        <input type="text" id="classCode" placeholder="e.g., MATH 201">
+                    </div>
+                </div>
+                <div class="form-row">
+                     <div class="form-group">
+                        <label for="classInstructor">Instructor</label>
+                        <input type="text" id="classInstructor" placeholder="e.g., Prof. Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="classCredits">Credits</label>
+                        <input type="number" id="classCredits" placeholder="3" min="1" max="6">
+                    </div>
+                </div>
+                 <div class="form-row">
+                    <div class="form-group">
+                        <label for="classSemester">Semester</label>
+                        <input type="text" id="classSemester" placeholder="e.g., Fall 2025">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addClass()" id="addClassBtn">➕ Add Class</button>
+                <button class="btn btn-secondary" onclick="cancelEdit()" id="cancelEditBtn" style="display:none;">Cancel</button>
+            </div>
+
+            <div class="content-section">
+                <h2>Your Classes</h2>
+                <div id="classesList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        let classes = JSON.parse(localStorage.getItem('classes')) || [];
+        let editId = null;
+
+        function saveData() {
+            localStorage.setItem('classes', JSON.stringify(classes));
+        }
+
+        function renderClasses() {
+            const container = document.getElementById('classesList');
+            if (classes.length === 0) {
+                container.innerHTML = '<p>No classes added yet.</p>';
+                return;
+            }
+            container.innerHTML = classes.map(cls => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-name">${cls.name}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">${cls.code || 'No code'}</div>
+                        </div>
+                        <div class="button-group">
+                            <button class="btn btn-primary btn-small" onclick="editClass(${cls.id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteClass(${cls.id})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="item-details">
+                        <div class="detail-item"><span class="detail-label">Instructor:</span> ${cls.instructor || 'N/A'}</div>
+                        <div class="detail-item"><span class="detail-label">Credits:</span> ${cls.credits || 'N/A'}</div>
+                        <div class="detail-item"><span class="detail-label">Semester:</span> ${cls.semester || 'N/A'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addClass() {
+            const name = document.getElementById('className').value.trim();
+            if (!name) {
+                alert('Class name is required.');
+                return;
+            }
+
+            const classData = {
+                name,
+                code: document.getElementById('classCode').value.trim(),
+                instructor: document.getElementById('classInstructor').value.trim(),
+                credits: document.getElementById('classCredits').value,
+                semester: document.getElementById('classSemester').value.trim()
+            };
+
+            if (editId) {
+                const index = classes.findIndex(c => c.id === editId);
+                classes[index] = { ...classes[index], ...classData };
+            } else {
+                classes.push({ id: Date.now(), ...classData });
+            }
+            
+            saveData();
+            renderClasses();
+            cancelEdit();
+        }
+
+        function editClass(id) {
+            const cls = classes.find(c => c.id === id);
+            if (!cls) return;
+
+            editId = id;
+            document.getElementById('className').value = cls.name;
+            document.getElementById('classCode').value = cls.code;
+            document.getElementById('classInstructor').value = cls.instructor;
+            document.getElementById('classCredits').value = cls.credits;
+            document.getElementById('classSemester').value = cls.semester;
+            
+            document.getElementById('addClassBtn').textContent = '💾 Update Class';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+            window.scrollTo(0, 0);
+        }
+
+        function cancelEdit() {
+            editId = null;
+            document.getElementById('className').value = '';
+            document.getElementById('classCode').value = '';
+            document.getElementById('classInstructor').value = '';
+            document.getElementById('classCredits').value = '';
+            document.getElementById('classSemester').value = '';
+            
+            document.getElementById('addClassBtn').textContent = '➕ Add Class';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        }
+        
+        function deleteClass(id) {
+            if (confirm('Are you sure? This will also delete all assignments for this class.')) {
+                classes = classes.filter(c => c.id !== id);
+                let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                assignments = assignments.filter(a => a.classId != id);
+                localStorage.setItem('assignments', JSON.stringify(assignments));
+                saveData();
+                renderClasses();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', renderClasses);
+    </script>
+</body>
+</html>

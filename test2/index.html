@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Student Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+</head>
+<body>
+  <nav id="sidebar">
+    <!-- Sidebar content will be loaded by app.js -->
+  </nav>
+
+  <main>
+    <div class="main-container">
+        <div class="page-header">
+          <h1>Dashboard</h1>
+          <p>A quick overview of your academic status.</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAssignments">0</div>
+                <div class="stat-label">Total Assignments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingAssignments">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedAssignments">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgGrade">-</div>
+                <div class="stat-label">Avg Grade</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalClasses">0</div>
+                <div class="stat-label">Classes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="dueSoon">0</div>
+                <div class="stat-label">Due This Week</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>🔥 Upcoming Assignments</h2>
+            <div id="upcomingAssignments">
+                <!-- Upcoming assignments will be loaded here -->
+            </div>
+        </div>
+    </div>
+  </main>
+  
+  <script src="app.js"></script>
+  <script>
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+
+    // Data Storage
+    let classes = JSON.parse(localStorage.getItem('classes')) || [];
+    let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+    
+    // Utility function to get class name
+    function getClassName(classId) {
+        const cls = classes.find(c => c.id == classId);
+        return cls ? cls.name : 'No Class';
+    }
+
+    // Utility function to format date
+    function formatDate(date) {
+        return new Intl.DateTimeFormat('en-US', {
+            weekday: 'short', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).format(new Date(date));
+    }
+
+    // Dashboard Update Logic
+    function updateDashboard() {
+        const total = assignments.length;
+        const pending = assignments.filter(a => !a.completed).length;
+        const completed = assignments.filter(a => a.completed).length;
+        const gradedAssignments = assignments.filter(a => a.grade !== null && a.points > 0);
+        const avgGrade = gradedAssignments.length > 0 ? 
+            (gradedAssignments.reduce((sum, a) => sum + (a.grade / a.points * 100), 0) / gradedAssignments.length).toFixed(1) + '%' : '-';
+        
+        const oneWeekFromNow = new Date();
+        oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+        const dueSoon = assignments.filter(a => 
+            !a.completed && new Date(a.dueDate) <= oneWeekFromNow
+        ).length;
+
+        document.getElementById('totalAssignments').textContent = total;
+        document.getElementById('pendingAssignments').textContent = pending;
+        document.getElementById('completedAssignments').textContent = completed;
+        document.getElementById('avgGrade').textContent = avgGrade;
+        document.getElementById('totalClasses').textContent = classes.length;
+        document.getElementById('dueSoon').textContent = dueSoon;
+
+        // Update upcoming assignments
+        const upcomingContainer = document.getElementById('upcomingAssignments');
+        const upcoming = assignments
+            .filter(a => !a.completed)
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .slice(0, 5);
+
+        if (upcoming.length === 0) {
+            upcomingContainer.innerHTML = '<div class="empty-state" style="padding: 2rem 0;"><p>No pending assignments. Great job! 🎉</p></div>';
+        } else {
+            upcomingContainer.innerHTML = upcoming.map(assignment => {
+                const isOverdue = new Date(assignment.dueDate) < new Date();
+                const overdueClass = isOverdue ? 'overdue-card' : '';
+                return `
+                <div class="item-card ${overdueClass}">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-name">${assignment.name}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">${getClassName(assignment.classId)}</div>
+                        </div>
+                    </div>
+                    <div class="item-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Due:</span> ${formatDate(assignment.dueDate)}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Priority:</span> ${assignment.priority}
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateDashboard);
+  </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Student Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+    <nav id="sidebar">
+        <!-- Sidebar content is identical across all pages -->
+    </nav>
+    <main>
+        <div class="main-container">
+             <div class="page-header">
+                <h1>Academic Calendar</h1>
+                <p>Visualize your assignment due dates.</p>
+            </div>
+            <div class="content-section calendar-container">
+                <div class="calendar-header">
+                    <h3 id="currentMonth"></h3>
+                    <div class="calendar-nav">
+                        <button class="btn btn-primary" onclick="changeMonth(-1)">‹</button>
+                        <button class="btn btn-secondary" onclick="goToToday()">Today</button>
+                        <button class="btn btn-primary" onclick="changeMonth(1)">›</button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+            <div class="content-section">
+                <h2>Assignments for <span id="selectedDate">Today</span></h2>
+                <div id="calendarAssignmentsList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        let classes = JSON.parse(localStorage.getItem('classes')) || [];
+        let currentDate = new Date();
+        let selectedCalendarDate = new Date();
+
+        function getClassName(classId) {
+            const cls = classes.find(c => c.id == classId);
+            return cls ? cls.name : 'No Class';
+        }
+
+        function renderCalendar() {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonth').textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+            
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                calendarGrid.appendChild(document.createElement('div'));
+            }
+
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = i;
+                
+                if (date.toDateString() === new Date().toDateString()) dayElement.classList.add('today');
+                if (assignments.some(a => new Date(a.dueDate).toDateString() === date.toDateString())) {
+                    dayElement.classList.add('has-assignment');
+                }
+                
+                dayElement.onclick = () => selectCalendarDate(date);
+                calendarGrid.appendChild(dayElement);
+            }
+            renderCalendarAssignments();
+        }
+
+        function selectCalendarDate(date) {
+            selectedCalendarDate = date;
+            document.getElementById('selectedDate').textContent = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+            renderCalendarAssignments();
+        }
+
+        function renderCalendarAssignments() {
+            const container = document.getElementById('calendarAssignmentsList');
+            const dayAssignments = assignments.filter(a => new Date(a.dueDate).toDateString() === selectedCalendarDate.toDateString());
+
+            if (dayAssignments.length === 0) {
+                container.innerHTML = '<p>No assignments due on this day.</p>';
+                return;
+            }
+            container.innerHTML = dayAssignments.map(a => `
+                <div class="item-card">
+                    <div class="item-name">${a.name}</div>
+                    <div>${getClassName(a.classId)}</div>
+                </div>
+            `).join('');
+        }
+
+        function changeMonth(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            selectedCalendarDate = new Date();
+            renderCalendar();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+          selectCalendarDate(new Date());
+          renderCalendar();
+        });
+    </script>
+</body>
+</html>

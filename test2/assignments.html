@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments - Student Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+    <nav id="sidebar">
+        <!-- Sidebar content is the same as index.html -->
+    </nav>
+    <main>
+        <div class="main-container">
+            <div class="page-header">
+                <h1>Assignments</h1>
+                <p>Manage all your homework, projects, and exams.</p>
+            </div>
+
+            <div class="content-section">
+                <h2>Add New Assignment</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="assignmentName">Assignment Name *</label>
+                        <input type="text" id="assignmentName" placeholder="e.g., Math Homework Ch. 5">
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentClass">Class</label>
+                        <select id="assignmentClass">
+                            <option value="">Select a class...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="assignmentDue">Due Date *</label>
+                        <input type="datetime-local" id="assignmentDue">
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentPriority">Priority</label>
+                        <select id="assignmentPriority">
+                            <option value="low">🟢 Low</option>
+                            <option value="medium" selected>🟡 Medium</option>
+                            <option value="high">🔴 High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="assignmentPoints">Total Points</label>
+                        <input type="number" id="assignmentPoints" placeholder="100" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentType">Assignment Type</label>
+                        <select id="assignmentType">
+                            <option value="homework">Homework</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="exam">Exam</option>
+                            <option value="project">Project</option>
+                            <option value="essay">Essay</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="assignmentDescription">Description</label>
+                    <textarea id="assignmentDescription" rows="3" placeholder="Assignment details, notes..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="addAssignment()">✨ Add Assignment</button>
+            </div>
+
+            <div class="content-section">
+                <h2>Your Assignments</h2>
+                <input type="text" class="form-group" id="assignmentSearch" placeholder="🔍 Search assignments..." onkeyup="filterAssignments()" style="width:100%; margin-bottom: 1.5rem;">
+                <div id="assignmentsList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Data and utility functions
+        let classes = JSON.parse(localStorage.getItem('classes')) || [];
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        
+        function saveData() {
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+        }
+
+        function getClassName(classId) {
+            const cls = classes.find(c => c.id == classId);
+            return cls ? cls.name : 'No Class';
+        }
+
+        function getLetterGrade(earned, total) {
+            const percentage = (earned / total) * 100;
+            if (percentage >= 90) return 'A';
+            if (percentage >= 80) return 'B';
+            if (percentage >= 70) return 'C';
+            if (percentage >= 60) return 'D';
+            return 'F';
+        }
+
+        // Assignment Management
+        function addAssignment() {
+            const name = document.getElementById('assignmentName').value.trim();
+            const classId = document.getElementById('assignmentClass').value;
+            const dueDate = document.getElementById('assignmentDue').value;
+            const priority = document.getElementById('assignmentPriority').value;
+            const points = parseInt(document.getElementById('assignmentPoints').value) || 100;
+            const type = document.getElementById('assignmentType').value;
+            const description = document.getElementById('assignmentDescription').value.trim();
+
+            if (!name || !dueDate) {
+                alert('Assignment name and due date are required!');
+                return;
+            }
+
+            const newAssignment = {
+                id: Date.now(), name, classId, dueDate, priority, points, type, description,
+                completed: false, grade: null
+            };
+
+            assignments.push(newAssignment);
+            saveData();
+            renderAssignments();
+            document.getElementById('assignmentName').value = '';
+            document.getElementById('assignmentDue').value = '';
+            document.getElementById('assignmentDescription').value = '';
+        }
+
+        function renderAssignments() {
+            const container = document.getElementById('assignmentsList');
+            const searchTerm = document.getElementById('assignmentSearch').value.toLowerCase();
+            
+            let filtered = assignments.filter(a => a.name.toLowerCase().includes(searchTerm) || getClassName(a.classId).toLowerCase().includes(searchTerm));
+            filtered.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p>No assignments found.</p>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(a => `
+                <div class="item-card priority-${a.priority} ${a.completed ? 'status-completed' : ''}">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-name">${a.name}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">${getClassName(a.classId)}</div>
+                        </div>
+                        <div class="button-group">
+                            ${!a.completed ? `<button class="btn btn-primary btn-small" onclick="markCompleted(${a.id})">Mark Done</button>` : ''}
+                            <button class="btn btn-danger btn-small" onclick="deleteAssignment(${a.id})">Delete</button>
+                        </div>
+                    </div>
+                    <!-- ... rest of the card ... -->
+                </div>
+            `).join('');
+        }
+
+        function markCompleted(id) {
+            const assignment = assignments.find(a => a.id === id);
+            if (assignment) {
+                assignment.completed = true;
+                saveData();
+                renderAssignments();
+            }
+        }
+        
+        function deleteAssignment(id) {
+            if (confirm('Are you sure you want to delete this assignment?')) {
+                assignments = assignments.filter(a => a.id !== id);
+                saveData();
+                renderAssignments();
+            }
+        }
+
+        function filterAssignments() {
+            renderAssignments();
+        }
+
+        function updateClassDropdown() {
+            const dropdown = document.getElementById('assignmentClass');
+            dropdown.innerHTML = '<option value="">Select a class...</option>';
+            classes.forEach(cls => {
+                dropdown.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClassDropdown();
+            renderAssignments();
+        });
+    </script>
+</body>
+</html>

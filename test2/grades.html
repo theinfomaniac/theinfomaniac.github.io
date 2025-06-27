@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grades - Student Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+    <nav id="sidebar">
+        <!-- Sidebar content is identical across all pages -->
+    </nav>
+    <main>
+        <div class="main-container">
+            <div class="page-header">
+                <h1>Grade Center</h1>
+                <p>Track your performance and overall GPA.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="gpaDisplay">-</div>
+                    <div class="stat-label">Current GPA</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="gradedAssignments">0</div>
+                    <div class="stat-label">Graded Assignments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completionRate">0%</div>
+                    <div class="stat-label">Completion Rate</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>Grade Breakdown by Class</h2>
+                <div id="gradesByClass"></div>
+            </div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+    <script>
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        let classes = JSON.parse(localStorage.getItem('classes')) || [];
+        
+        function getLetterGrade(earned, total) {
+            const percentage = (earned / total) * 100;
+            if (percentage >= 90) return 'A';
+            if (percentage >= 80) return 'B';
+            if (percentage >= 70) return 'C';
+            if (percentage >= 60) return 'D';
+            return 'F';
+        }
+        
+        function calculateGPA() {
+            const gradePoints = { 'A': 4.0, 'B': 3.0, 'C': 2.0, 'D': 1.0, 'F': 0.0 };
+            let totalQualityPoints = 0;
+            let totalCredits = 0;
+
+            classes.forEach(cls => {
+                const classAssignments = assignments.filter(a => a.classId == cls.id && a.grade !== null);
+                if (classAssignments.length > 0) {
+                    const classTotal = classAssignments.reduce((sum, a) => sum + a.points, 0);
+                    const classEarned = classAssignments.reduce((sum, a) => sum + parseFloat(a.grade), 0);
+                    const letterGrade = getLetterGrade(classEarned, classTotal);
+                    const credits = parseInt(cls.credits) || 3;
+                    totalQualityPoints += (gradePoints[letterGrade] || 0) * credits;
+                    totalCredits += credits;
+                }
+            });
+            return totalCredits === 0 ? 0 : (totalQualityPoints / totalCredits);
+        }
+
+        function renderGrades() {
+            const gradedAssignments = assignments.filter(a => a.grade !== null);
+            document.getElementById('gpaDisplay').textContent = calculateGPA().toFixed(2);
+            document.getElementById('gradedAssignments').textContent = gradedAssignments.length;
+            const completionRate = assignments.length > 0 ? ((assignments.filter(a=>a.completed).length / assignments.length) * 100).toFixed(0) : 0;
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+
+            const container = document.getElementById('gradesByClass');
+            const gradesByClass = {};
+            classes.forEach(cls => {
+                const classAssignments = assignments.filter(a => a.classId == cls.id && a.grade !== null);
+                if (classAssignments.length > 0) {
+                    const classTotal = classAssignments.reduce((sum, a) => sum + a.points, 0);
+                    const classEarned = classAssignments.reduce((sum, a) => sum + parseFloat(a.grade), 0);
+                    gradesByClass[cls.name] = {
+                        percentage: (classEarned / classTotal * 100).toFixed(1),
+                        assignments: classAssignments.length,
+                    };
+                }
+            });
+
+            container.innerHTML = Object.keys(gradesByClass).length === 0 ? '<p>No graded assignments yet.</p>' :
+                Object.entries(gradesByClass).map(([className, data]) => `
+                    <div class="item-card">
+                        <div class="item-header">
+                           <div class="item-name">${className}</div>
+                           <div>${data.percentage}% (${getLetterGrade(data.percentage, 100)})</div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+        
+        document.addEventListener('DOMContentLoaded', renderGrades);
+    </script>
+</body>
+</html>

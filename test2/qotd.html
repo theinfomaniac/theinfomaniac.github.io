@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question of the Day - Student Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <style>
+    .question-card {
+        background: var(--secondary-bg);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--accent-color);
+        padding: 2rem;
+        border-radius: 12px;
+    }
+    .question-subject {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+    }
+    .question-text {
+        font-size: 1.5rem;
+        color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <nav id="sidebar">
+    <!-- Sidebar content will be loaded by app.js -->
+  </nav>
+
+  <main>
+    <div class="main-container">
+        <div class="page-header">
+          <h1>Question of the Day</h1>
+          <p>A little challenge to get your brain working.</p>
+        </div>
+        
+        <div class="question-card">
+            <div id="qotd-subject" class="question-subject">Loading Subject...</div>
+            <p id="qotd-text" class="question-text">Loading question...</p>
+        </div>
+    </div>
+  </main>
+  
+  <script src="app.js"></script>
+  <script>
+    const questionBank = {
+        "Math": [
+            "If a rectangle's length is twice its width and its perimeter is 30 cm, what is its area?",
+            "What is the next prime number after 29?",
+            "Solve for x: 3x - 7 = 14"
+        ],
+        "Science": [
+            "What is the chemical symbol for gold?",
+            "Which planet is known as the Red Planet?",
+            "What is the powerhouse of the cell?"
+        ],
+        "History": [
+            "In what year did the American Revolution begin?",
+            "Who was the first person to walk on the moon?",
+            "The ancient city of Rome was built on how many hills?"
+        ],
+        "English": [
+            "What is a 'metaphor'?",
+            "Who wrote the play 'Romeo and Juliet'?",
+            "What is the past tense of the verb 'to seek'?"
+        ]
+    };
+
+    function getQuestion() {
+        const subjects = Object.keys(questionBank);
+        const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
+        const questionsInSubject = questionBank[randomSubject];
+        const randomQuestion = questionsInSubject[Math.floor(Math.random() * questionsInSubject.length)];
+
+        document.getElementById('qotd-subject').textContent = `Subject: ${randomSubject}`;
+        document.getElementById('qotd-text').textContent = randomQuestion;
+    }
+
+    document.addEventListener('DOMContentLoaded', getQuestion);
+  </script>
+</body>
+</html>
