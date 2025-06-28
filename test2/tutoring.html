@@ -74,70 +74,39 @@
                     <label for="message-text">Your Message</label>
                     <textarea id="message-text" rows="4" placeholder="Type your message here..."></textarea>
                 </div>
-                <button class="btn btn-primary" onclick="postMessage()">Post Message</button>
+                <button class="btn btn-primary" id="post-message-btn">Post Message</button>
             </div>
        </div>
     </div>
   </main>
-  <script src="app.js"></script>
-
-  <script>
-    // IMPORTANT: Replace these placeholder values with your actual
-    // Firebase project configuration and environment-specific variables.
-    // You can find your Firebase config in your Firebase project settings.
-    const __firebase_config = JSON.stringify({
-  apiKey: "AIzaSyCuC7sw59sw2g54d7EgnkpGr9I4UdOSUIk",
-  authDomain: "stutracker-af74a.firebaseapp.com",
-  projectId: "stutracker-af74a",
-  storageBucket: "stutracker-af74a.firebasestorage.app",
-  messagingSenderId: "379344021405",
-  appId: "1:379344021405:web:979140de8886ffdb1fb174",
-    });
-
-    // These are typically provided by the environment running your application.
-    // For this example, we'll use placeholder values.
-    const __app_id = 'tutoring-app'; // A unique ID for this app instance
-    const __initial_auth_token = undefined; // Set this if you use custom authentication tokens
-  </script>
-
+  
   <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // --- Firebase Setup ---
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+    // --- Firebase Config ---
+    // This configuration is directly embedded to avoid race conditions.
+    const firebaseConfig = {
+        apiKey: "AIzaSyCuC7sw59sw2g54d7EgnkpGr9I4UdOSUIk",
+        authDomain: "stutracker-af74a.firebaseapp.com",
+        projectId: "stutracker-af74a",
+        storageBucket: "stutracker-af74a.firebasestorage.app",
+        messagingSenderId: "379344021405",
+        appId: "1:379344021405:web:979140de8886ffdb1fb174",
+    };
 
+    // --- App-specific variables ---
+    const appId = 'tutoring-app';
+
+    // --- Global Firebase variables ---
+    let db;
+    let auth;
     let messagesCollection;
 
-    async function setupFirebase() {
-        try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        } catch (error) {
-            console.error("Authentication Error:", error);
-            await signInAnonymously(auth);
-        }
-        
-        // Path to the PUBLIC collection for all users to share
-        const collectionPath = `artifacts/${appId}/public/data/tutoring_messages`;
-        messagesCollection = collection(db, collectionPath);
-        
-        // Start listening for real-time updates
-        listenForMessages();
-    }
-
     // --- Firestore Functions ---
-    window.postMessage = async function() {
+    async function postMessage() {
         const author = document.getElementById('author-name').value.trim() || 'Anonymous';
         const text = document.getElementById('message-text').value.trim();
 
@@ -190,21 +159,48 @@
             querySnapshot.forEach((doc) => {
                 messages.push({ id: doc.id, ...doc.data() });
             });
-            messages.sort((a,b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            // Sort by date descending to show newest messages first
+            messages.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
             renderMessages(messages);
         }, (error) => {
             console.error("Error listening for messages:", error);
         });
     }
 
-    // Initial setup when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedName = localStorage.getItem('tutoringAuthorName');
-        if (savedName) {
-            document.getElementById('author-name').value = savedName;
+    // --- Initial setup when page loads ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Sign in anonymously
+            await signInAnonymously(auth);
+
+            // Set up the Firestore collection reference
+            const collectionPath = `artifacts/${appId}/public/data/tutoring_messages`;
+            messagesCollection = collection(db, collectionPath);
+
+            // Attach event listener for the button
+            document.getElementById('post-message-btn').addEventListener('click', postMessage);
+            
+            // Restore author name from localStorage
+            const savedName = localStorage.getItem('tutoringAuthorName');
+            if (savedName) {
+                document.getElementById('author-name').value = savedName;
+            }
+
+            // Start listening for real-time message updates
+            listenForMessages();
+
+        } catch (error) {
+            console.error("Firebase Initialization Error:", error);
+            const container = document.getElementById('messages-container-inner');
+            container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Could not connect to the discussion board. Please check the console for details.</p>`;
         }
-        setupFirebase();
     });
   </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
