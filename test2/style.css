@@ -153,7 +153,10 @@ main {
     border: none;
     text-align: left;
     cursor: pointer;
-    justify-content: space-between;
+}
+
+.dropdown-btn .arrow-icon {
+    margin-left: auto;
 }
 
 .sub-menu {
