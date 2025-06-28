@@ -80,12 +80,12 @@
     </div>
   </main>
   
-  <!-- Firebase Compatibility SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+  <script type="module">
+    // Import Firebase modules (v9+ modular syntax)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  <script>
     // --- Firebase Config ---
     const firebaseConfig = {
         apiKey: "AIzaSyCuC7sw59sw2g54d7EgnkpGr9I4UdOSUIk",
@@ -115,10 +115,10 @@
         }
         localStorage.setItem('tutoringAuthorName', author);
         try {
-            await messagesCollection.add({
+            await addDoc(messagesCollection, {
                 author: author,
                 text: text,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: serverTimestamp() // Use modular server timestamp
             });
             document.getElementById('message-text').value = '';
         } catch (error) {
@@ -148,7 +148,8 @@
     }
 
     function listenForMessages() {
-        messagesCollection.orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+        const q = query(messagesCollection, orderBy("createdAt", "desc"));
+        onSnapshot(q, (querySnapshot) => {
             const messages = [];
             querySnapshot.forEach((doc) => {
                 messages.push({ id: doc.id, ...doc.data() });
@@ -159,65 +160,37 @@
         });
     }
 
-    // --- Sidebar Loader ---
-    const loadSidebar = (callback) => {
-        fetch('sidebar.html')
-            .then(response => response.ok ? response.text() : Promise.reject('Sidebar not found'))
-            .then(data => {
-                document.getElementById('sidebar').innerHTML = data;
-                callback?.();
-            })
-            .catch(error => {
-                console.error('Error fetching sidebar:', error);
-                document.getElementById('sidebar').innerHTML = '<p>Error loading navigation.</p>';
-            });
-    };
+    // --- Main Setup Function ---
+    async function setupPage() {
+        try {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
 
-    // --- Direct Initialization ---
-    try {
-        firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.firestore();
+            await signInAnonymously(auth);
 
-        auth.signInAnonymously().then(() => {
-            // This block runs after successful anonymous authentication.
             const collectionPath = `artifacts/${appId}/public/data/tutoring_messages`;
-            messagesCollection = db.collection(collectionPath);
-            
-            // Attach event listeners and load initial data
-            document.getElementById('post-message-btn').addEventListener('click', postMessage);
-            const savedName = localStorage.getItem('tutoringAuthorName');
-            if (savedName) {
-                document.getElementById('author-name').value = savedName;
-            }
+            messagesCollection = collection(db, collectionPath);
+
             listenForMessages();
 
-            // IMPORTANT: Load the sidebar only AFTER Firebase is initialized and authenticated.
-            loadSidebar(() => {
-                const themeToggle = document.getElementById('theme-toggle');
-                if (themeToggle) {
-                    themeToggle.addEventListener('click', () => {
-                        document.body.classList.toggle('dark-mode');
-                        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-                    });
-                }
-                if (localStorage.getItem('theme') === 'dark') {
-                    document.body.classList.add('dark-mode');
-                }
-            });
-
-        }).catch(authError => {
-            console.error("Firebase Anonymous Auth Error:", authError);
+        } catch (error) {
+            console.error("Firebase Initialization Error:", error);
             const container = document.getElementById('messages-container-inner');
-            container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Authentication failed.</p>`;
-        });
-
-    } catch (error) {
-        console.error("Firebase Initialization Error:", error);
-        const container = document.getElementById('messages-container-inner');
-        container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Could not connect to the board.</p>`;
+            container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Could not connect to the board.</p>`;
+        }
     }
-  </script>
 
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setupPage();
+        document.getElementById('post-message-btn').addEventListener('click', postMessage);
+        const savedName = localStorage.getItem('tutoringAuthorName');
+        if (savedName) {
+            document.getElementById('author-name').value = savedName;
+        }
+    });
+  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
