@@ -180,14 +180,32 @@
         db = firebase.firestore();
 
         auth.signInAnonymously().then(() => {
+            // This block runs after successful anonymous authentication.
             const collectionPath = `artifacts/${appId}/public/data/tutoring_messages`;
             messagesCollection = db.collection(collectionPath);
+            
+            // Attach event listeners and load initial data
             document.getElementById('post-message-btn').addEventListener('click', postMessage);
             const savedName = localStorage.getItem('tutoringAuthorName');
             if (savedName) {
                 document.getElementById('author-name').value = savedName;
             }
             listenForMessages();
+
+            // IMPORTANT: Load the sidebar only AFTER Firebase is initialized and authenticated.
+            loadSidebar(() => {
+                const themeToggle = document.getElementById('theme-toggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                        document.body.classList.toggle('dark-mode');
+                        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+                    });
+                }
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.body.classList.add('dark-mode');
+                }
+            });
+
         }).catch(authError => {
             console.error("Firebase Anonymous Auth Error:", authError);
             const container = document.getElementById('messages-container-inner');
@@ -199,20 +217,6 @@
         const container = document.getElementById('messages-container-inner');
         container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Could not connect to the board.</p>`;
     }
-
-    // Load sidebar and theme logic
-    loadSidebar(() => {
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-            });
-        }
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-    });
   </script>
 
 </body>
