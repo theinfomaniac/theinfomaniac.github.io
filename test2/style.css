@@ -115,6 +115,9 @@ main {
     text-decoration: none;
     transition: background-color 0.2s, color 0.2s;
     font-weight: 500;
+    width: 100%; /* Ensure button takes full width */
+    font-family: inherit; /* Ensure button uses the same font */
+    font-size: 1rem; /* Ensure button has same font size */
 }
 
 #sidebar nav a:hover, #sidebar nav .dropdown-btn:hover, #sidebar nav li.active > a, #sidebar nav li.active > .dropdown-btn {
@@ -146,12 +149,10 @@ main {
 }
 
 .dropdown-btn {
-    width: 100%;
     background: none;
     border: none;
     text-align: left;
     cursor: pointer;
-    display: flex;
     justify-content: space-between;
 }
 
@@ -166,6 +167,10 @@ main {
 .sub-menu a {
     padding: 0.7rem 1rem 0.7rem 3.4rem;
     font-size: 0.9rem;
+}
+
+#tyler-nav-link {
+    display: none; /* Hide Tyler tab by default */
 }
 
 #sidebar.collapsed .sub-menu {
@@ -437,4 +442,3 @@ main {
     .stats-grid, .item-details, .form-row, .tyler-albums-grid { grid-template-columns: 1fr; }
     .calendar-header { flex-direction: column; gap: 1rem; }
 }
-

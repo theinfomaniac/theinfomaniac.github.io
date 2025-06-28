@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Form - Student Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <style>
+    .request-item {
+        border-left-width: 5px;
+        border-left-style: solid;
+        margin-bottom: 1rem;
+        padding-left: 1rem;
+    }
+    .request-item.feature { border-color: var(--accent-color); }
+    .request-item.bug { border-color: var(--danger-color); }
+    .request-item.other { border-color: var(--text-secondary); }
+    .request-title { font-weight: 600; font-size: 1.1rem; }
+    .request-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <nav id="sidebar"></nav>
+  <main>
+    <div class="main-container">
+      <div class="page-header">
+        <h1>Request Form</h1>
+        <p>Your submissions are private and only visible to you.</p>
+      </div>
+      <div class="content-section">
+        <h2>Submit a Request or Report</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="request-type">Type</label>
+                <select id="request-type">
+                    <option value="feature">Feature Request</option>
+                    <option value="bug">Bug Report</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                 <label for="request-title">Title</label>
+                <input type="text" id="request-title" placeholder="e.g., Add dark mode toggle">
+            </div>
+        </div>
+         <div class="form-group">
+            <label for="request-details">Details</label>
+            <textarea id="request-details" rows="5" placeholder="Please be as detailed as possible..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="submitRequest()">Submit Request</button>
+      </div>
+
+      <div class="content-section">
+          <h2>Your Submitted Requests</h2>
+          <div id="requests-list">
+              <!-- Submitted requests will be displayed here -->
+          </div>
+      </div>
+    </div>
+  </main>
+  
+  <script src="app.js"></script>
+  
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Firebase Setup ---
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let userId;
+    let requestsCollection;
+
+    async function setupFirebase() {
+        // Sign in the user
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Authentication Error:", error);
+            // Fallback for environments without auth variables
+            await signInAnonymously(auth);
+        }
+
+        userId = auth.currentUser?.uid || `anon-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Define the path to the user's private requests collection
+        const collectionPath = `artifacts/${appId}/users/${userId}/requests`;
+        requestsCollection = collection(db, collectionPath);
+        
+        // Start listening for real-time updates
+        listenForRequests();
+    }
+
+    // --- Firestore Functions ---
+    window.submitRequest = async function() {
+        const type = document.getElementById('request-type').value;
+        const title = document.getElementById('request-title').value.trim();
+        const details = document.getElementById('request-details').value.trim();
+
+        if (!title || !details) {
+            alert('Please provide a title and details for your request.');
+            return;
+        }
+
+        try {
+            // Add a new document to the user's private collection
+            await addDoc(requestsCollection, {
+                type: type,
+                title: title,
+                details: details,
+                createdAt: new Date()
+            });
+
+            // Clear form
+            document.getElementById('request-title').value = '';
+            document.getElementById('request-details').value = '';
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert("Could not submit request. Please try again.");
+        }
+    }
+
+    function renderRequests(requests) {
+        const listContainer = document.getElementById('requests-list');
+        if (requests.length === 0) {
+            listContainer.innerHTML = '<p>No requests have been submitted yet.</p>';
+            return;
+        }
+
+        listContainer.innerHTML = requests.map(req => `
+            <div class="item-card request-item ${req.type}">
+                <div class="request-meta">
+                    <span>${req.type.charAt(0).toUpperCase() + req.type.slice(1)}</span> | 
+                    <span>${req.createdAt.toDate().toLocaleString()}</span>
+                </div>
+                <h3 class="request-title">${req.title}</h3>
+                <p style="color: var(--text-secondary);">${req.details}</p>
+            </div>
+        `).join('');
+    }
+    
+    function listenForRequests() {
+        // Create a query to order requests by creation date, newest first
+        const q = query(requestsCollection); // Firestore doesn't support descending without a composite index, so we sort client-side
+
+        // onSnapshot listens for real-time changes
+        onSnapshot(q, (querySnapshot) => {
+            const requests = [];
+            querySnapshot.forEach((doc) => {
+                requests.push({ id: doc.id, ...doc.data() });
+            });
+            // Sort by date client-side
+            requests.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            renderRequests(requests);
+        }, (error) => {
+            console.error("Error listening for requests:", error);
+        });
+    }
+
+    // Initialize Firebase when the page loads
+    setupFirebase();
+  </script>
+</body>
+</html>
