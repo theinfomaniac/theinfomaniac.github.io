@@ -153,6 +153,7 @@ main {
     border: none;
     text-align: left;
     cursor: pointer;
+    justify-content: space-between;
 }
 
 .sub-menu {
