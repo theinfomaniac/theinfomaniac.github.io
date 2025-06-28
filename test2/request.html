@@ -60,8 +60,6 @@
     </div>
   </main>
   
-  <script src="app.js"></script>
-  
   <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -186,6 +184,15 @@
 
     // Initialize Firebase when the page loads
     document.addEventListener('DOMContentLoaded', () => {
+        const sidebarContainer = document.getElementById('sidebar');
+        if (sidebarContainer) {
+            // This is a simplified check. If app.js has more complex dependencies,
+            // this might need adjustment. For now, we assume it just needs the sidebar element.
+            const script = document.createElement('script');
+            script.src = 'app.js';
+            document.body.appendChild(script);
+        }
+
         setupFirebase();
         document.getElementById('submit-request-btn').addEventListener('click', submitRequest);
     });
