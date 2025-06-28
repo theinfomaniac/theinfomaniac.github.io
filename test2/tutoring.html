@@ -99,10 +99,32 @@
     // --- App-specific variables ---
     const appId = 'tutoring-app';
 
-    // --- Global Firebase variables ---
-    let db;
-    let auth;
+    // --- Firebase Initialization ---
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
     let messagesCollection;
+
+    // --- Main Setup Function ---
+    async function setupFirebase() {
+        try {
+            // Sign in the user anonymously
+            await signInAnonymously(auth);
+            
+            // Define the path to the public tutoring messages collection
+            const collectionPath = `artifacts/${appId}/public/data/tutoring_messages`;
+            messagesCollection = collection(db, collectionPath);
+            
+            // Start listening for real-time updates
+            listenForMessages();
+
+        } catch (error) {
+            console.error("Firebase Initialization Error:", error);
+            const container = document.getElementById('messages-container-inner');
+            container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Could not connect to the board.</p>`;
+        }
+    }
 
     // --- Firestore Functions ---
     async function postMessage() {
@@ -113,8 +135,16 @@
             alert('Please enter a message.');
             return;
         }
+        // Save the author's name for convenience
         localStorage.setItem('tutoringAuthorName', author);
+        
         try {
+            // Ensure messagesCollection is initialized before trying to use it
+            if (!messagesCollection) {
+                console.error("Firestore collection is not initialized.");
+                alert("Could not post message. Please try again.");
+                return;
+            }
             await addDoc(messagesCollection, {
                 author: author,
                 text: text,
@@ -129,11 +159,15 @@
 
     function renderMessages(messages) {
         const container = document.getElementById('messages-container-inner');
+        const messagesContainer = document.getElementById('messages-container');
+
         if (messages.length === 0) {
             container.innerHTML = '<p style="text-align:center; padding: 2rem;">No messages yet. Be the first to post!</p>';
             return;
         }
+        
         container.innerHTML = messages.map(msg => {
+            // Fallback for timestamp if it's not yet set by the server
             const date = msg.createdAt ? msg.createdAt.toDate().toLocaleString() : 'Just now';
             return `
                 <div class="message-card">
@@ -148,6 +182,11 @@
     }
 
     function listenForMessages() {
+        // Ensure messagesCollection is initialized before trying to use it
+        if (!messagesCollection) {
+            console.error("Cannot listen for messages, collection is not initialized.");
+            return;
+        }
         const q = query(messagesCollection, orderBy("createdAt", "desc"));
         onSnapshot(q, (querySnapshot) => {
             const messages = [];
@@ -160,31 +199,15 @@
         });
     }
 
-    // --- Main Setup Function ---
-    async function setupPage() {
-        try {
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-
-            await signInAnonymously(auth);
-
-            const collectionPath = `artifacts/${appId}/public/data/tutoring_messages`;
-            messagesCollection = collection(db, collectionPath);
-
-            listenForMessages();
-
-        } catch (error) {
-            console.error("Firebase Initialization Error:", error);
-            const container = document.getElementById('messages-container-inner');
-            container.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--danger-color);">Error: Could not connect to the board.</p>`;
-        }
-    }
-
     // --- Event Listeners ---
     document.addEventListener('DOMContentLoaded', () => {
-        setupPage();
+        // Initialize Firebase and related services
+        setupFirebase();
+        
+        // Attach event listener for posting a message
         document.getElementById('post-message-btn').addEventListener('click', postMessage);
+        
+        // Restore author name from local storage
         const savedName = localStorage.getItem('tutoringAuthorName');
         if (savedName) {
             document.getElementById('author-name').value = savedName;
