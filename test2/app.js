@@ -1,3 +1,6 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarContainer = document.getElementById('sidebar');
+    if (!sidebarContainer) return; // Do not run if the sidebar element doesn't exist
 
     // The entire sidebar HTML structure.
     const sidebarHTML = `
@@ -103,3 +106,5 @@ function toggleSubMenu(button) {
         subMenu.style.maxHeight = subMenu.scrollHeight + "px";
     }
 }
+ }
+)
