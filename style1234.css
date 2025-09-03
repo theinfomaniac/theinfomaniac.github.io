@@ -1,0 +1,298 @@
+
+        /* General Styles & Themes */
+        :root {
+            --dark-bg: #1a1a1a;
+            --dark-text: #e2e2e2;
+            --dark-card-bg: #242424;
+            --dark-border: #3a3a3a;
+            --dark-accent: #ffffff;
+            --light-bg: #f9f9f9;
+            --light-text: #2c2c2c;
+            --light-card-bg: #ffffff;
+            --light-border: #ebebeb;
+            --light-accent: #1a1a1a;
+            --font-heading: 'Poppins', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Page visibility helper */
+        .hidden {
+            display: none;
+        }
+
+        /* --- Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            background-color: var(--light-card-bg);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--light-border);
+            transition: background-color 0.3s, border-color 0.3s;
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-family: var(--font-heading);
+            font-size: 2.25rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 0.25rem 0 0;
+            color: #888;
+            font-size: 1rem;
+        }
+
+        #theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            transition: transform 0.3s ease;
+        }
+        #theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+        
+        #theme-toggle svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--light-text);
+            transition: fill 0.3s;
+        }
+        
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .back-link {
+            color: var(--light-accent);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.3s, letter-spacing 0.3s;
+        }
+        .back-link:hover {
+            letter-spacing: 0.5px;
+        }
+
+
+        /* --- Gallery Page Styles --- */
+        .gallery-container {
+            padding: 3rem 1.5rem;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin: 0 auto;
+        }
+
+        .artwork-card {
+            background-color: var(--light-card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.07), 0 20px 40px rgba(0,0,0,0.07);
+        }
+        
+        .artwork-card .image-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .artwork-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .artwork-card .info {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .artwork-card .title {
+            font-family: var(--font-heading);
+            font-weight: 500;
+            margin: 0 0 0.25rem 0;
+            font-size: 1.2rem;
+        }
+
+        .artwork-card .medium {
+            font-size: 0.9rem;
+            color: #888;
+            margin: 0;
+        }
+
+        /* --- Artwork Page Styles --- */
+        .artwork-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .artwork-title {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            margin: 2rem 0 3rem 0;
+            font-weight: 300;
+        }
+
+        .main-artwork-image {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--light-border);
+            padding-bottom: 0.75rem;
+            transition: border-color 0.3s;
+        }
+
+        .process-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .process-gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .process-gallery img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .description-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: #aaa;
+            border-top: 1px solid var(--light-border);
+        }
+
+        /* --- Dark Theme Overrides --- */
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+        body.dark-theme header {
+            background-color: var(--dark-card-bg);
+            border-bottom-color: var(--dark-border);
+        }
+        body.dark-theme #theme-toggle svg {
+            fill: var(--dark-text);
+        }
+        body.dark-theme .artwork-card {
+            background-color: var(--dark-card-bg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        body.dark-theme .artwork-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        body.dark-theme .artwork-card .info, 
+        body.dark-theme .section-title,
+        body.dark-theme .process-gallery img,
+        body.dark-theme footer {
+            border-color: var(--dark-border);
+        }
+        body.dark-theme .back-link {
+            color: var(--dark-accent);
+        }
+        body.dark-theme .back-link:hover {
+            color: #ffffff;
+        }
+        body.dark-theme .main-artwork-image {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        body.dark-theme footer {
+            color: #888;
+        }
+        body.dark-theme .description-content p {
+            color: #ccc;
+        @font-face {
+            font-family: 'futuraextra_bold';
+            src: url('futura_extra_bold-webfont.woff2') format('woff2'),
+                 url('futura_extra_bold-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        
+        }
+
+
+        /* --- Icon Visibility --- */
+        .sun-icon { display: none; }
+        body.dark-theme .moon-icon { display: none; }
+        body.dark-theme .sun-icon { display: block; }
