@@ -14,6 +14,17 @@
             --font-heading: 'Poppins', sans-serif;
             --font-body: 'Inter', sans-serif;
         }
+        @font-face {
+            font-family: 'futuraextra_bold';
+            src: url("https://theinfomaniac.github.io/futura_extra_bold-webfont.woff2") format('woff2'),
+                 url("https://theinfomaniac.github.io/futura_extra_bold-webfont.woff") format('woff');
+            font-weight: normal;
+            font-style: normal;
+        
+        }
+        .cmiygl{
+           font-family: futuraextra_bold;
+        }      
 
         body {
             font-family: var(--font-body);
@@ -282,17 +293,6 @@
         }
         body.dark-theme .description-content p {
             color: #ccc;
-        @font-face {
-            font-family: 'futuraextra_bold';
-            src: url("https://theinfomaniac.github.io/futura_extra_bold-webfont.woff2") format('woff2'),
-                 url("https://theinfomaniac.github.io/futura_extra_bold-webfont.woff") format('woff');
-            font-weight: normal;
-            font-style: normal;
-        
-        }
-        .cmiygl{
-           font-family: futuraextra_bold;
-        }
 
 
         /* --- Icon Visibility --- */
