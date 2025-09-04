@@ -22,11 +22,22 @@
             font-style: normal;
         
         }
+        @font-face {
+         font-family: 'igor';
+         src: url('https://pixelframe.design/wp-content/themes/cesis/includes/fonts/igor/igor-bolditalic-webfont.woff2') format('woff2'),
+         url('https://pixelframe.design/wp-content/themes/cesis/includes/fonts/igor/igor-bolditalic-webfont.woff') format('woff'),
+         url('https://pixelframe.design/wp-content/themes/cesis/includes/fonts/igor/igor-bolditalic-webfont.ttf') format('ttf');
+         font-weight: normal;
+         font-style: normal;
+        }
         .cmiygl{
            font-family: futuraextra_bold;
            font-size: 1.4rem;
         }      
-
+        .igor{
+           font-family: igor;
+           font-size:1.4rem;
+        }
         body {
             font-family: var(--font-body);
             margin: 0;
