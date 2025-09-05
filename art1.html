@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethan Huerta - Art Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* General Styles & Themes */
+        :root {
+            --dark-bg: #1a1a1a;
+            --dark-text: #e2e2e2;
+            --dark-card-bg: #242424;
+            --dark-border: #3a3a3a;
+            --dark-accent: #ffffff;
+            --light-bg: #f9f9f9;
+            --light-text: #2c2c2c;
+            --light-card-bg: #ffffff;
+            --light-border: #ebebeb;
+            --light-accent: #1a1a1a;
+            --font-heading: 'Poppins', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Page visibility helper */
+        .hidden {
+            display: none;
+        }
+
+        /* --- Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            background-color: var(--light-card-bg);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--light-border);
+            transition: background-color 0.3s, border-color 0.3s;
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-family: var(--font-heading);
+            font-size: 2.25rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 0.25rem 0 0;
+            color: #888;
+            font-size: 1rem;
+        }
+
+        #theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            transition: transform 0.3s ease;
+        }
+        #theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+        
+        #theme-toggle svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--light-text);
+            transition: fill 0.3s;
+        }
+        
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .back-link {
+            color: var(--light-accent);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.3s, letter-spacing 0.3s;
+        }
+        .back-link:hover {
+            letter-spacing: 0.5px;
+        }
+
+
+        /* --- Gallery Page Styles --- */
+        .gallery-container {
+            padding: 3rem 1.5rem;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin: 0 auto;
+        }
+
+        .artwork-card {
+            background-color: var(--light-card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.07), 0 20px 40px rgba(0,0,0,0.07);
+        }
+        
+        .artwork-card .image-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .artwork-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .artwork-card .info {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .artwork-card .title {
+            font-family: var(--font-heading);
+            font-weight: 500;
+            margin: 0 0 0.25rem 0;
+            font-size: 1.2rem;
+        }
+
+        .artwork-card .medium {
+            font-size: 0.9rem;
+            color: #888;
+            margin: 0;
+        }
+
+        /* --- Artwork Page Styles --- */
+        .artwork-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .artwork-title {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            margin: 2rem 0 3rem 0;
+            font-weight: 300;
+        }
+
+        .main-artwork-image {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--light-border);
+            padding-bottom: 0.75rem;
+            transition: border-color 0.3s;
+        }
+
+        .process-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .process-gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .process-gallery img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .description-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: #aaa;
+            border-top: 1px solid var(--light-border);
+        }
+
+        /* --- Dark Theme Overrides --- */
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+        body.dark-theme header {
+            background-color: var(--dark-card-bg);
+            border-bottom-color: var(--dark-border);
+        }
+        body.dark-theme #theme-toggle svg {
+            fill: var(--dark-text);
+        }
+        body.dark-theme .artwork-card {
+            background-color: var(--dark-card-bg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        body.dark-theme .artwork-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        body.dark-theme .artwork-card .info, 
+        body.dark-theme .section-title,
+        body.dark-theme .process-gallery img,
+        body.dark-theme footer {
+            border-color: var(--dark-border);
+        }
+        body.dark-theme .back-link {
+            color: var(--dark-accent);
+        }
+        body.dark-theme .back-link:hover {
+            color: #ffffff;
+        }
+        body.dark-theme .main-artwork-image {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        body.dark-theme footer {
+            color: #888;
+        }
+        body.dark-theme .description-content p {
+            color: #ccc;
+        }
+        
+        /* --- Icon Visibility --- */
+        .sun-icon { display: none; }
+        body.dark-theme .moon-icon { display: none; }
+        body.dark-theme .sun-icon { display: block; }
+    </style>
+</head>
+<body>
+
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.64 5.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.64 5.64zm12.72 12.72c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zM5.64 18.36l-1.06-1.06c-.39-.39-.39-1.02 0-1.41 .39-.39 1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41-.39.39-1.02.39-1.41 0zm12.72-12.72l-1.06-1.06c-.39-.39-.39-1.02 0-1.41s1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41s-1.02.39-1.41 0z"/></svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.3 4.9c.4-.2.6-.7.4-1.1-.2-.4-.7-.6-1.1-.4C7.2 5.4 4 9.2 4 13.5 4 19.1 8.9 24 14.5 24c4.3 0 8.1-3.2 10.1-7.5.2-.4 0-.9-.4-1.1-.4-.2-.9 0-1.1.4-1.7 3.4-5.1 5.7-8.6 5.7-4.4 0-8-3.6-8-8 0-3.5 2.3-6.8 5.7-8.2z"/></svg>
+    </button>
+
+    <div id="gallery-page">
+        <header>
+            <h1>Art 1 Portfolio</h1>
+            <p>All works by Ethan Huerta.</p>
+        </header>
+        <main class="gallery-container">
+            <div id="gallery-grid" class="gallery-grid"></div>
+        </main>
+    </div>
+
+    <div id="artwork-page" class="hidden">
+        <header class="nav-header">
+            <a class="back-link" onclick="showGallery()">&larr; Return to Main Gallery</a>
+        </header>
+        <main id="artwork-container" class="artwork-container">
+            <h1 id="artwork-title" class="artwork-title"></h1>
+            <img id="artwork-main-image" class="main-artwork-image" src="" alt="">
+            <section class="process-section">
+                <h2 class="section-title">Sketches &amp; Process</h2>
+                <div id="artwork-process-gallery" class="process-gallery"></div>
+            </section>
+            <section class="description-section">
+                <h2 class="section-title">Artwork Description</h2>
+                <div id="artwork-description" class="description-content"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ===================================================================================
+        // ARTWORK DATABASE
+        // ===================================================================================
+        const artworksData = [
+            {
+                id: 1,
+                title: "Lines",
+                medium: "Pencil/Marker",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/1667d18e-66f4-43e2-a50b-77c83370e77b.jpg?raw=true",
+                altText: "First artwork for Art 1.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20024444.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20024439.png?raw=true"
+                ],
+                description: `<p>This was the very first artwork that I did for Art 1. This linear exploration investigates the fundamental vocabulary of mark-making through systematic hatching and geometric repetition. The radiating lines and central diamond motif reflect my fascination with how minimalist drawing techniques—similar to the stripped-down production on Vince Staples' early work—can create maximum visual impact through pure structural elements rather than representational content.</p>`
+            },
+            {
+                id: 2,
+                title: "Texture",
+                medium: "Pencil",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/0d326b30-1713-4fbb-94a8-ace0a8952291.jpg?raw=true",
+                altText: "A pencil drawing showcasing texture.",
+                processImages: [
+                ],
+                description: `<p>This textural study examines the tactile qualities of surface through varied pencil pressure and crosshatching techniques. The woven brick pattern creates a meditative field that mirrors the layered, sample-heavy production style of producers like Madlib, where each mark contributes to a larger rhythmic whole that transforms simple materials into complex atmospheric experiences.</p>`
+            },
+            {
+                id: 3,
+                title: "Color",
+                medium: "Colored Pencils",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/c1beb5a5-e54a-4439-8b2c-387e5ccfa03d.jpg?raw=true",
+                altText: "A colored pencil drawing showcasing color.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20024452.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20024458.png?raw=true"
+                ],
+                description: `<p>This chromatic landscape channels the emotional intensity of environmental destruction through bold contrasts between earth and sky. The meteor shower's orange streaks against the dark atmosphere reflect my generation's climate anxiety, while the peaceful green hill below mirrors the bittersweet nostalgia found in Tyler, The Creator's "Flower Boy"</p>`
+            },
+                        {
+                id: 4,
+                title: "Value",
+                medium: "Pencil",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/cfdf1a19-6ad5-4007-abfd-0e5c9de9e640.jpg?raw=true",
+                altText: "A pencil artwork that demonstrates value and shades.",
+                processImages: [
+                ],
+                description: `<p>This tonal portrait study captures the contemplative essence of artistic introspection through careful attention to light and shadow modeling. The figure's peaceful expression and sophisticated grayscale work reflect moments of creative meditation, while the technical precision represents my growing understanding of how portraiture can reveal the internal emotional landscapes that fuel artistic expression.</p>`
+            },            {
+                id: 5,
+                title: "Alebrije",
+                medium: "Colored Pencils/Marker",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/1774f839-0ee6-4fd7-aa43-a3b59a6e4329.jpg?raw=true",
+                altText: "A colored pencil artwork showing an \"alebrije\".",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025046.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025022.png?raw=true"
+                ],
+                description: `<p>This mythical creature drawing merges Mexican folk art traditions with contemporary fantasy aesthetics, channeling the vibrant energy of alebrije sculptures through my own lens. The swirling dragon form and "MF DOOM" text reference both ancient mythology and MF DOOM's raw artistic universe, representing how my identity exists at the intersection of cultural heritage and modern creative expression</p>`
+            },            {
+                id: 6,
+                title: "Room",
+                medium: "Pencil",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/f10c4a30-7cd4-4608-aba3-2ec0cb4d47ea.jpg?raw=true",
+                altText: "A pencil artwork showcasing a room drawn in one point perspective.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025231.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025133.png?raw=true",
+                ],
+                description: `<p>This interior perspective drawing explores the architecture of memory and domestic space through rigorous attention to linear construction. The empty, stage-like quality evokes the liminal spaces of childhood homes, while the technical precision reflects my interest in how built environments shape our emotional experiences.</p>`
+            },            {
+                id: 7,
+                title: "Pop Culture",
+                medium: "Colored Pencils",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/63a4689d-0b51-4b6e-8972-6ce47993467d.jpg?raw=true",
+                altText: "A colored pencil artwork showcasing pop culture icons.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025322.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025327.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025333.png?raw=true"
+                ],
+                description: `<p>This explosive composition celebrates the sensory overload of contemporary digital culture through vibrant, overlapping forms that seem to melt and merge. The "MF DOOM" text and rainbow palette reference both MF DOOM's genre-blending artistry and the way internet culture transforms traditional media into new hybrid expressions of identity and creativity.</p>`
+            },            {
+                id: 8,
+                title: "Lepollero",
+                medium: "Watercolor/Colored Pencil/Tape",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/5af33291-faa8-45ee-950d-dbbbb61ee3a6.jpg?raw=true",
+                altText: "A watercolor artwork created with the help of tape.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025402.png?raw=true"
+                ],
+                description: `<p>This fruit study series explores color theory and compositional harmony through simple still-life subjects rendered with vibrant mixed media. Each piece isolates different fruits against complementary color fields, reflecting how pop art aesthetics can transform everyday objects into statements about consumer culture, while the clean presentation mirrors the minimalist design sensibilities found in Frank Ocean's visual albums.</p>`
+            },            {
+                id: 9,
+                title: "Two Point Perspective",
+                medium: "Pencil",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/bd695dc5-83f6-486e-a943-03210438d734.jpg?raw=true",
+                altText: "A pencil artwork showcasing a street corner in two point perspective.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025422.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20025429.png?raw=true"
+                ],
+                description: `<p> This architectural corner study examines the intersection of multiple spatial planes through rigorous geometric construction. The stark linear forms and precise vanishing points reflect my fascination with urban environments and the way contemporary spaces can feel simultaneously expansive and claustrophobic—mirroring the complex emotional architecture found in Kendrick Lamar's narrative songwriting.</p>`
+            },
+            {
+                id: 10,
+                title: "Portrait",
+                medium: "Pencil/Colored Pencil",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/0478c73a-5d98-4b69-92df-a0079dc4351d.jpg?raw=true",
+                altText: "A portrait made of ripped paper and pencils.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030314.png?raw=true"
+                ],
+                description: `<p>This mixed-media portrait combines pencil and colored pencil with physical collage elements. By using ripped paper to construct the subject's form, the piece explores themes of fragmentation and reconstruction of identity. The careful rendering of the facial features contrasts with the raw, torn edges, suggesting a personality that is both composed and complex.</p>`
+            },
+            {
+                id: 11,
+                title: "Van Gogh",
+                medium: "Oil Pastels",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030357.png?raw=true",
+                altText: "A oil pastel artwork inspired by Van Gogh.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030345.png?raw=true"
+                ],
+                description: `<p>This piece pays homage to Vincent van Gogh, using oil pastels to emulate his distinctive, expressive style. The artwork captures the vibrant energy and emotional intensity of Van Gogh's work, with thick, textured strokes and a rich color palette. It is an exploration of post-impressionistic techniques and a tribute to one of art history's masters.</p>`
+            },
+            {
+                id: 12,
+                title: "Clay Sculpture",
+                medium: "Clay",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030448.png?raw=true",
+                altText: "A clay sculpture representing Omnivincible.",
+                processImages: [
+                ],
+                description: `<p>This clay sculpture brings the character "Omnivincible" into three-dimensional form. The piece focuses on capturing the character's powerful and heroic presence. The choice of clay as a medium allows for a tactile and robust representation, emphasizing the strength and form of the figure.</p>`
+            },
+            {
+                id: 13,
+                title: "Snacks",
+                medium: "Acrylics",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030548.png?raw=true",
+                altText: "A acrylic painting of Twix.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030510.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030518.png?raw=true"
+                ],
+                description: `<p>This acrylic painting elevates a common snack, a Twix bar, into a subject of fine art. The piece plays with the themes of pop art and consumer culture, rendering a familiar object with careful detail and vibrant color. It invites the viewer to consider the aesthetics of everyday items and their place in our visual landscape.</p>`
+            },
+            {
+                id: 14,
+                title: "Cards",
+                medium: "Acrylics",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/cbc058e5-601a-4545-b495-b0cf1df6d061.jpg?raw=true",
+                altText: "A acrylic painting of playing cards.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/3852daf3-fbe8-48b5-810b-b7085eb7a69c.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030607.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030619.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030631.png?raw=true"
+                ],
+                description: `<p>This acrylic painting features a composition of playing cards, exploring themes of chance, strategy, and illusion. The realistic depiction of the cards, with attention to light and shadow, creates a compelling still life. The arrangement might suggest a narrative or simply be a study in form and composition.</p>`
+            },
+            {
+                id: 15,
+                title: "Pointilism",
+                medium: "Acrylics",
+                mainImage: "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/IMG_7395.jpg?raw=true",
+                altText: "An abstract digital artwork.",
+                processImages: [
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030729.png?raw=true",
+                    "https://github.com/theinfomaniac/theinfomaniac.github.io/blob/main/Screenshot%202025-08-30%20030736.png?raw=true"
+                ],
+                description: `<p>This piece is an exploration of Pointillism, using acrylics to create an image from a multitude of tiny dots. The technique creates a vibrant, shimmering effect, where colors blend in the viewer's eye. The abstract nature of the work allows for a focus on color, light, and the texture created by the application of paint.</p>`
+            }
+        ];
+
+        // ===================================================================================
+        // APP LOGIC
+        // ===================================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element References ---
+            const body = document.body;
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const galleryPage = document.getElementById('gallery-page');
+            const artworkPage = document.getElementById('artwork-page');
+            const artworkContainer = document.getElementById('artwork-container');
+            const galleryGrid = document.getElementById('gallery-grid');
+
+            // --- Theme Control ---
+            try {
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark') body.classList.add('dark-theme');
+            } catch (e) {
+                console.warn("Could not access localStorage for theme.", e);
+            }
+            
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                try {
+                    localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+                } catch (e) {
+                    console.warn("Could not save theme preference to localStorage.", e);
+                }
+            });
+
+            // --- Page Routing ---
+            window.showGallery = () => {
+                galleryPage.classList.remove('hidden');
+                artworkPage.classList.add('hidden');
+                window.scrollTo(0, 0);
+            };
+
+            window.showArtwork = (id) => {
+                const artwork = artworksData.find(a => a.id === id);
+                if (!artwork) return;
+
+                // Animation logic
+                artworkContainer.classList.remove('fade-in');
+                void artworkContainer.offsetWidth; // Trigger reflow to restart animation
+                artworkContainer.classList.add('fade-in');
+
+                document.getElementById('artwork-title').textContent = artwork.title;
+                document.getElementById('artwork-main-image').src = artwork.mainImage;
+                document.getElementById('artwork-main-image').alt = artwork.altText;
+                document.getElementById('artwork-description').innerHTML = artwork.description;
+                
+                const processGallery = document.getElementById('artwork-process-gallery');
+                processGallery.innerHTML = '';
+                artwork.processImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = "Process image for " + artwork.title;
+                    processGallery.appendChild(img);
+                });
+
+                galleryPage.classList.add('hidden');
+                artworkPage.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            };
+
+            // --- Gallery Generation ---
+            function generateGallery() {
+                galleryGrid.innerHTML = '';
+                artworksData.forEach(artwork => {
+                    const card = document.createElement('div');
+                    card.className = 'artwork-card';
+                    card.setAttribute('onclick', `showArtwork(${artwork.id})`);
+                    card.innerHTML = `
+                        <div class="image-wrapper">
+                            <img src="${artwork.mainImage}" alt="${artwork.altText}">
+                        </div>
+                        <div class="info">
+                            <p class="title">${artwork.title}</p>
+                            <p class="medium">${artwork.medium}</p>
+                        </div>`;
+                    galleryGrid.appendChild(card);
+                });
+            }
+
+            // --- Initial Load ---
+            generateGallery();
+            showGallery();
+        });
+    </script>
+</body>
+</html>
+
