@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethan Huerta - Art Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://theinfomaniac.github.io/style12345.css">
+    
+</head>
+<body>
+
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.64 5.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.64 5.64zm12.72 12.72c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zM5.64 18.36l-1.06-1.06c-.39-.39-.39-1.02 0-1.41 .39-.39 1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41-.39.39-1.02.39-1.41 0zm12.72-12.72l-1.06-1.06c-.39-.39-.39-1.02 0-1.41s1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41s-1.02.39-1.41 0z"/></svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.3 4.9c.4-.2.6-.7.4-1.1-.2-.4-.7-.6-1.1-.4C7.2 5.4 4 9.2 4 13.5 4 19.1 8.9 24 14.5 24c4.3 0 8.1-3.2 10.1-7.5.2-.4 0-.9-.4-1.1-.4-.2-.9 0-1.1.4-1.7 3.4-5.1 5.7-8.6 5.7-4.4 0-8-3.6-8-8 0-3.5 2.3-6.8 5.7-8.2z"/></svg>
+    </button>
+
+    <div id="gallery-page">
+        <header>
+            <h1>Art 2 Portfolio</h1>
+            <p>All works by Ethan Huerta.</p>
+        </header>
+        <main class="gallery-container">
+            <div id="gallery-grid" class="gallery-grid"></div>
+        </main>
+    </div>
+
+    <div id="artwork-page" class="hidden">
+        <header class="nav-header">
+            <a class="back-link" onclick="showGallery()">&larr; Return to Main Gallery</a>
+        </header>
+        <main id="artwork-container" class="artwork-container">
+            <h1 id="artwork-title" class="artwork-title"></h1>
+            <img id="artwork-main-image" class="main-artwork-image" src="" alt="">
+            <section class="process-section">
+                <h2 class="section-title">Sketches &amp; Process</h2>
+                <div id="artwork-process-gallery" class="process-gallery"></div>
+            </section>
+            <section class="description-section">
+                <h2 class="section-title">Artwork Description</h2>
+                <div id="artwork-description" class="description-content"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ===================================================================================
+        // ARTWORK DATABASE
+        // ===================================================================================
+        const artworksData = [
+            {
+                id: 1,
+                title: "Who Am I?",
+                medium: "Watercolor/Pencil/Marker",
+                mainImage: "https://iili.io/KFPOaHB.md.png",
+                altText: "Watercolor artwork representing who I am.",
+                processImages: [
+                    "https://iili.io/KFPO5cQ.md.jpg",
+                    "https://iili.io/KFPOuPj.md.jpg",
+                    "https://iili.io/KFPO7SV.md.png"
+                ],
+                description: `<p>This piece captures the multifaceted layers of my personal identity through a blend of cultural touchstones that shaped me. The primary subject merges Finn from Adventure Time with Tyler, The Creator's album aesthetics—the "GOBLIN" text referencing his raw, introspective artistry and the color palette echoing the dreamy vulnerability of "IGOR". I used watercolor washes and bold lettering to create a soft, polaroid-like quality that mirrors the nostalgic storytelling of Kendrick Lamar's "good kid, m.A.A.d city," representing how my personality exists at the intersection of childhood wonder, experimental creativity, and the complex emotional depth found in hip-hop's most honest moments. Also, the "IGOR" text references the next work that I did.</p>`
+            },
+            {
+                id: 2,
+                title: "Tape Art",
+                medium: "Watercolor/Tape",
+                mainImage: "https://theinfomaniac.github.io/1757103786.611959.jpg",
+                altText: "A watercolor artwork created with the help of tape.",
+                processImages: [
+                    "https://iili.io/KFP7fPs.png",
+                    "https://iili.io/KFP7zR2.png",
+                    "https://iili.io/KFPrScu.md.png"
+                ],
+                description: `<p>IGOR OUT NOW.</p>`
+            },
+            {
+                id: 3,
+                title: "Threads of Gold",
+                medium: "undecided",
+                mainImage: "https://placehold.co/900x600/588157/FFFFFF?text=Final-Gold",
+                altText: "Threads of Gold",
+                processImages: [
+                    "https://placehold.co/400x300/a3b18a/fff?text=First+Sketch",
+                    "https://placehold.co/400x300/dad7cd/000?text=Better+Sketch",
+                    "https://placehold.co/400x300/3a5a40/fff?text=Last+Draft+before+final"
+                ],
+                description: `<p>there isnt a description rn</p><p class="cmiygl">CALL ME IF YOU GET LOST</p><p class="igor">IGOR</p>`
+            }
+        ];
+
+        // ===================================================================================
+        // APP LOGIC
+        // ===================================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element References ---
+            const body = document.body;
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const galleryPage = document.getElementById('gallery-page');
+            const artworkPage = document.getElementById('artwork-page');
+            const artworkContainer = document.getElementById('artwork-container');
+            const galleryGrid = document.getElementById('gallery-grid');
+
+            // --- Theme Control ---
+            try {
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark') body.classList.add('dark-theme');
+            } catch (e) {
+                console.warn("Could not access localStorage for theme.", e);
+            }
+            
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                try {
+                    localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+                } catch (e) {
+                    console.warn("Could not save theme preference to localStorage.", e);
+                }
+            });
+
+            // --- Page Routing ---
+            window.showGallery = () => {
+                galleryPage.classList.remove('hidden');
+                artworkPage.classList.add('hidden');
+                window.scrollTo(0, 0);
+            };
+
+            window.showArtwork = (id) => {
+                const artwork = artworksData.find(a => a.id === id);
+                if (!artwork) return;
+
+                // Animation logic
+                artworkContainer.classList.remove('fade-in');
+                void artworkContainer.offsetWidth; // Trigger reflow to restart animation
+                artworkContainer.classList.add('fade-in');
+
+                document.getElementById('artwork-title').textContent = artwork.title;
+                document.getElementById('artwork-main-image').src = artwork.mainImage;
+                document.getElementById('artwork-main-image').alt = artwork.altText;
+                document.getElementById('artwork-description').innerHTML = artwork.description;
+                
+                const processGallery = document.getElementById('artwork-process-gallery');
+                processGallery.innerHTML = '';
+                artwork.processImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = "Process image for " + artwork.title;
+                    processGallery.appendChild(img);
+                });
+
+                galleryPage.classList.add('hidden');
+                artworkPage.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            };
+
+            // --- Gallery Generation ---
+            function generateGallery() {
+                galleryGrid.innerHTML = '';
+                artworksData.forEach(artwork => {
+                    const card = document.createElement('div');
+                    card.className = 'artwork-card';
+                    card.setAttribute('onclick', `showArtwork(${artwork.id})`);
+                    card.innerHTML = `
+                        <div class="image-wrapper">
+                            <img src="${artwork.mainImage}" alt="${artwork.altText}">
+                        </div>
+                        <div class="info">
+                            <p class="title">${artwork.title}</p>
+                            <p class="medium">${artwork.medium}</p>
+                        </div>`;
+                    galleryGrid.appendChild(card);
+                });
+            }
+
+            // --- Initial Load ---
+            generateGallery();
+            showGallery();
+        });
+    </script>
+</body>
+</html>
+
