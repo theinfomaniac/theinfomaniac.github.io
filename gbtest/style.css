@@ -1,0 +1,4 @@
+body { background: #050; color: #fff; font-family: monospace; display:flex; flex-direction:column; align-items:center; }
+#game { margin-top:12px; }
+#info { margin-top:8px; font-size:14px; opacity:0.9; }
+canvas { image-rendering: pixelated; }
