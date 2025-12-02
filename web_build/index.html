@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seal Sanctuary Tycoon (Web)</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.regular.ttf');
+        }
+        @font-face {
+            font-family: 'DTM-Mono';
+            src: url('DTM-Mono.otf');
+        }
+        @font-face {
+            font-family: 'DTM-Sans';
+            src: url('DTM-Sans.otf');
+        }
+        
+        body {
+            background-color: #222;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        #gameCanvas {
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 100%;
+            max-height: 90vh;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading Python Environment...</div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script type="py" config="pyscript.toml">
+        import cmu_graphics
+        # The shim automatically starts the app when imported if main calls runApp
+        # But main.py has `if __name__ == '__main__': runApp()`
+        # So we need to import main and call runApp manually if it doesn't run.
+        # However, cmu_graphics shim's runApp sets up the loop.
+        
+        import main
+        
+        # We need to manually trigger the start if main.py doesn't run automatically
+        # main.py has `if __name__ == '__main__':` which won't be true on import.
+        
+        cmu_graphics.runApp(width=800, height=900)
+        
+        import js
+        js.document.getElementById("loading").style.display = "none"
+    </script>
+</body>
+</html>
