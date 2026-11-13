@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#0e1010" name="theme-color"/><title>Admin | Biochem Club</title><link href="./favicon.svg" rel="icon" type="image/svg+xml"/><link href="./style.css" rel="stylesheet"/><meta content="noindex,nofollow" name="robots"/></head><body class="dark-mode"><a class="skip-link" href="#content">Skip to content</a><nav aria-label="Main navigation" id="sidebar"><ul><li class="brand-row"><span aria-hidden="true" class="brand-mark">B</span><span class="logo">Biochem Club</span><button aria-expanded="true" aria-label="Collapse sidebar" id="toggle-btn" onclick="toggleSidebar()" title="Collapse sidebar"><svg height="20" viewbox="0 0 24 24" width="20"><path d="M10 5 3 12l7 7M18 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2"></path></svg></button></li><li class=""><a href="./index.html" title="Home"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path><path d="M9 21v-8h6v8"></path></svg></span><span>Home</span></a></li><li><a href="./meetings.html" title="Meetings"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="5"></rect><path d="M7 3v4M17 3v4M3 10h18"></path></svg></span><span>Meetings</span></a></li><li><a href="./activities.html" title="Activities"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><path d="M9 3h6M10 3v7l-6.4 10a1 1 0 0 0 .9 1.5h15a1 1 0 0 0 .9-1.5L14 10V3"></path><path d="M7 16h10"></path></svg></span><span>Activities</span></a></li><li><a href="./notes.html" title="Notes"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M14 3v6h5M9 14h6M9 18h6"></path></svg></span><span>Notes</span></a></li><li><a href="./feedback.html" title="Discussion"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><path d="M4 4h16v13H9l-5 4V4z"></path><path d="M8 9h8M8 13h6"></path></svg></span><span>Discussion</span></a></li><li><button aria-expanded="false" class="dropdown-btn" onclick="toggleSubMenu(this)" title="More pages"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></span><span>More</span><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><path d="M5 9l7 7 7-7"></path></svg></span></button><ul class="sub-menu"><div><li><a href="./about.html">About</a></li><li><a href="./join.html">Join</a></li></div></ul></li><li class="nav-spacer"></li><li><button aria-label="Switch light or dark mode" class="theme-toggle" onclick="toggleTheme()" type="button"><span aria-hidden="true" class="nav-icon"><svg viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></span><span>Toggle theme</span></button></li><li class="active"><a aria-current="page" href="./admin.html" title="Admin"><span aria-hidden="true" class="nav-icon">⚙</span><span>Admin</span></a></li></ul></nav><main id="content">
+<header class="page-intro"><h1>Admin</h1><p class="lead">Post announcements, update meeting information, and edit text without opening every HTML file.</p></header>
+<section class="container" id="connect-panel">
+<h2>Where edits will be saved</h2>
+<p id="mode-description">Checking your site settings…</p>
+<div hidden="" id="login-area">
+<form class="admin-form" id="login-form">
+<label for="email">Admin email</label><input autocomplete="username" id="email" required="" type="email"/>
+<label for="password">Password</label><input autocomplete="current-password" id="password" required="" type="password"/>
+<button class="action" type="submit">Sign in</button>
+</form>
+<p class="small-note">Only accounts listed as admins in the database can publish edits.</p><p aria-live="polite" class="admin-status" id="login-status" role="status"></p>
+</div>
+<div hidden="" id="login-actions"><span id="session-label"></span> <button class="small-button" id="signout-button" type="button">Sign out</button></div>
+</section>
+<div hidden="" id="admin-editor">
+<div class="admin-layout">
+<div>
+<section class="container admin-form">
+<h2>Announcements</h2><p>These appear at the top of Home. If there are none, that section stays hidden.</p>
+<div id="announcement-list"></div>
+<button class="small-button" id="add-announcement" type="button">Add announcement</button>
+</section>
+<section class="container admin-form">
+<h2>Meeting information</h2>
+<label for="meetingFrequency">Usual meeting day</label><input data-field="meetingFrequency" id="meetingFrequency" maxlength="150"/>
+<label for="meetingTime">Meeting time</label><input data-field="meetingTime" id="meetingTime" maxlength="150" placeholder="Leave empty if unconfirmed"/>
+<label for="meetingLocation">Location</label><input data-field="meetingLocation" id="meetingLocation" maxlength="250" placeholder="Only post a location meant to be public"/>
+<label for="nextMeeting">Next meeting</label><input data-field="nextMeeting" id="nextMeeting" maxlength="150" placeholder="e.g. Thursday, December 3"/>
+<h3>Confirmed dates</h3><div id="updates-list"></div><button class="small-button" id="add-meeting-update" type="button">Add date</button>
+</section>
+<section class="container admin-form">
+<h2>Contact &amp; notes</h2>
+<label for="contactEmail">Public contact email</label><input data-field="contactEmail" id="contactEmail" maxlength="250" placeholder="club@example.com" type="email"/>
+<label for="notesEmbedUrl">Google Docs embed URL</label><input data-field="notesEmbedUrl" id="notesEmbedUrl" placeholder="https://docs.google.com/document/d/.../pub?embedded=true" type="url"/>
+<label for="notesDocumentUrl">Link to open the doc (optional)</label><input data-field="notesDocumentUrl" id="notesDocumentUrl" placeholder="https://docs.google.com/document/d/..." type="url"/>
+</section>
+<details class="container admin-form admin-details" id="edit-page-text"><summary>Edit page text</summary>
+
+<p>Edit what visitors read. These fields contain plain text; no HTML is needed.</p>
+<label for="homeIntro">Home introduction</label><textarea data-field="homeIntro" id="homeIntro"></textarea>
+<label for="homeAbout">Home — about section</label><textarea data-field="homeAbout" id="homeAbout"></textarea>
+<label for="homeAboutExtra">Home — second paragraph</label><textarea data-field="homeAboutExtra" id="homeAboutExtra"></textarea>
+<label for="activitiesIntro">Activities introduction</label><textarea data-field="activitiesIntro" id="activitiesIntro"></textarea>
+<label for="activitiesTopics">Activities topics (one per line)</label><textarea data-field="activitiesTopics" id="activitiesTopics"></textarea>
+<label for="activitiesProjects">Activities projects paragraph</label><textarea data-field="activitiesProjects" id="activitiesProjects"></textarea>
+<label for="aboutIntro">About introduction</label><textarea data-field="aboutIntro" id="aboutIntro"></textarea>
+<label for="aboutWhy">About — why we started</label><textarea data-field="aboutWhy" id="aboutWhy"></textarea>
+<label for="aboutHow">About — how it works</label><textarea data-field="aboutHow" id="aboutHow"></textarea>
+<label for="joinIntro">Join introduction</label><textarea data-field="joinIntro" id="joinIntro"></textarea>
+<label for="joinMessage">Join — how to participate</label><textarea data-field="joinMessage" id="joinMessage"></textarea>
+</details>
+</div>
+<aside>
+<section class="container"><h2>Publish changes</h2>
+<p id="publish-hint">Editing locally? Save a preview or download your updated site-data.js file.</p>
+<div class="admin-actions">
+<button class="action" disabled="" id="publish-button" type="button">Publish changes</button>
+<button class="action outline" id="preview-button" type="button">Save local preview</button>
+<button class="small-button" id="download-button" type="button">Download site-data.js</button>
+<button class="small-button" id="clear-preview" type="button">Clear local preview</button>
+</div>
+<p aria-live="polite" class="admin-status" id="admin-status" role="status">No changes saved yet.</p>
+<a class="text-link" href="./index.html">View home page</a>
+</section>
+<section class="container"><h2>Before publishing</h2>
+<ul class="admin-help"><li>Only publish information you want everyone to see.</li><li>Don't put private member details in announcements.</li><li>Publish a Google Doc for public viewing before embedding it.</li><li>For shared live updates, follow <a href="./SETUP.md">SETUP.md</a> to connect Supabase.</li></ul>
+</section>
+</aside>
+</div>
+</div>
+<footer class="footer">Biochem Club · Independent, not affiliated with a school. <a href="./index.html">Home</a></footer>
+</main><script src="./site-data.js"></script><script src="./supabase-config.js"></script><script src="./app.js"></script><script src="./admin.js"></script></body></html>
